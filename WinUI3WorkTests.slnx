@@ -1,0 +1,19 @@
+<Solution>
+  <Configurations>
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="WinUI3cppWorkTest/WinUI3cppWorkTest.vcxproj" Id="a1fd3c3c-7f1f-420e-9135-f0ac2a719bca">
+    <Deploy />
+  </Project>
+  <Project Path="WinUI3csWorkTest/WinUI3csWorkTest.csproj" Id="79686aeb-35e9-4983-bf9e-dbc08db34a77">
+    <Platform Solution="*|ARM64" Project="ARM64" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
+    <Deploy />
+  </Project>
+  <Project Path="WorkTestSetup/WorkTestSetup.vdproj" Type="Installer">
+    <Build />
+  </Project>
+</Solution>
