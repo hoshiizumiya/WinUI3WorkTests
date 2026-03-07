@@ -16,6 +16,7 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <!--<TabView x:Name="WebTabView">
         <TabViewItem Header="Tab 1">
@@ -97,7 +98,12 @@
             Spacing="10">
             <!--<Button Content="添加任务" Command="{x:Bind ViewModel.AddTaskCommand}" />
         <TextBlock Text="{x:Bind ViewModel.Status, Mode=OneWay}" />-->
-            <TextBlock>ssss</TextBlock>
+            <TextBlock>TemporaryFolder</TextBlock>
+            <TextBlock x:Name="TemporaryFolder" />
+            <TextBlock>LocalFolder</TextBlock>
+            <TextBlock x:Name="LocalFolder" />
+            <TextBlock>SharedFolder</TextBlock>
+            <TextBlock x:Name="SharedFolder" />
         </StackPanel>
 
 

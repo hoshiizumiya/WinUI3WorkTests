@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+﻿using DevWinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -11,6 +7,11 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -26,6 +27,7 @@ namespace WinUI3csWorkTest
     /// </summary>
     public partial class App : Application
     {
+        public IThemeService ThemeService { get; set; }
         private Window? _window;
         /// <summary>
         /// Gets, or initializes, the singleton application object. This is the first line of authored code
@@ -53,6 +55,9 @@ namespace WinUI3csWorkTest
         {
             _window = new MainWindow();
             _window.Activate();
+            ThemeService = new ThemeService();
+            ThemeService.Initialize(_window);
+
         }
     }
 }

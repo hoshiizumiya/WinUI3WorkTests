@@ -8,6 +8,7 @@
 #include <winrt/Microsoft.UI.Windowing.h>
 #include <winrt/Windows.Networking.Connectivity.h>
 #include <winrt/Microsoft.UI.Composition.SystemBackdrops.h>
+#include <winrt/Microsoft.Windows.Storage.h>
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -33,6 +34,11 @@ namespace winrt::WinUI3cppWorkTest::implementation
 		{
 			IP().Text(ips[0]);
 		}
+
+		TemporaryFolder().Text(winrt::Microsoft::Windows::Storage::ApplicationData::GetDefault().TemporaryPath());
+		LocalFolder().Text(winrt::Microsoft::Windows::Storage::ApplicationData::GetDefault().LocalPath());
+		// Why this is null?
+		SharedFolder().Text(winrt::Microsoft::Windows::Storage::ApplicationData::GetDefault().SharedLocalPath());
 	}
 
 	std::vector<std::wstring> MainWindow::GetLocalIPv6Addresses()
