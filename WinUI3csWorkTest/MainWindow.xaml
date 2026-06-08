@@ -14,12 +14,18 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         <TitleBar Height="36">
             <Grid>
                 <TextBlock Text="WinUI3csWorkTest" />
             </Grid>
         </TitleBar>
-        <StackPanel>
+        <StackPanel Grid.Row="1">
             <ComboBox dev:ThemeServiceAttach.ThemeService="{x:Bind AppThemeService}">
                 <ComboBoxItem Content="Light" Tag="Light" />
                 <ComboBoxItem Content="Dark" Tag="Dark" />
@@ -35,6 +41,27 @@
                 <ComboBoxItem Content="Transparent" Tag="Transparent" />
             </ComboBox>
         </StackPanel>
-
+        <StackPanel x:Name="LayoutRoot" Grid.Row="2">
+            <StackPanel
+                Padding="12"
+                BorderBrush="Black"
+                BorderThickness="4">
+                <TextBlock Text="Indeterminate Progress Bar" />
+                <ProgressBar Margin="0,12" IsIndeterminate="True" />
+            </StackPanel>
+            <StackPanel
+                Padding="12"
+                BorderBrush="Black"
+                BorderThickness="4">
+                <TextBlock Text="Value-Based Progress Bar" />
+                <ProgressBar
+                    x:Name="progressBar1"
+                    Margin="0,12"
+                    Maximum="200"
+                    Style="{StaticResource DefaultProgressBarStyle}"
+                    Value="0" />
+                <RepeatButton Click="RepeatButton_Click" Content="Press and hold" />
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>

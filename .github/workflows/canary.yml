@@ -1,0 +1,215 @@
+﻿name: Canary
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_prerelease:
+        description: Publish prerelease
+        required: false
+        default: true
+        type: boolean
+  push:
+    branches-ignore:
+      - l10n_develop
+      - release
+      - dependabot/**
+    paths-ignore:
+      - '.gitattributes'
+      - '.github/**'
+      - '.gitignore'
+      - '.gitmodules'
+      - '**.md'
+      - 'LICENSE'
+      - '**.yml'
+  pull_request:
+      branches-ignore:
+      - l10n_develop
+      - release
+      - dependabot/**
+      paths-ignore:
+      - '.gitattributes'
+      - '.github/**'
+      - '.gitignore'
+      - '.gitmodules'
+      - '**.md'
+      - 'LICENSE'
+      - '**.yml'
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: canary-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  USERNAME: hoshiizumiya
+  FEED_URL: https://nuget.pkg.github.com/hoshiizumiya/index.json
+  VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/hoshiizumiya/index.json,readwrite"
+
+jobs:
+  build:
+    runs-on: windows-2025-vs2026
+    outputs:
+      date: ${{ steps.meta.outputs.date }}
+      package_name: ${{ steps.meta.outputs.package_name }}
+
+    strategy:
+      matrix:
+        configuration: [Release]
+        platform: [x64, ARM64]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v2
+
+      - name: Set up vcpkg
+        working-directory: ${{ env.VCPKG_INSTALLATION_ROOT }}
+        shell: pwsh
+        run: vcpkg integrate install
+
+      - name: Add NuGet sources for vcpkg
+        shell: pwsh
+        run: |
+          $nuget = & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" fetch nuget
+          
+          & $nuget sources add `
+            -Source "${{ env.FEED_URL }}" `
+            -StorePasswordInClearText `
+            -Name GitHubPackages `
+            -UserName "${{ env.USERNAME }}" `
+            -Password "${{ secrets.GITHUB_TOKEN }}"
+
+          & $nuget setapikey "${{ secrets.GITHUB_TOKEN }}" `
+            -Source "${{ env.FEED_URL }}"
+
+      - name: Restore NuGet
+        shell: pwsh
+        run: nuget restore WinUIWorkTests.slnx
+
+      - name: Restore Certificate
+        run: |
+          $certPath = "$env:GITHUB_WORKSPACE\cert.pfx"
+          $bytes = [Convert]::FromBase64String("${{ secrets.PFX_CERT_BASE64 }}")
+          [IO.File]::WriteAllBytes($certPath, $bytes)
+
+          if (-not (Test-Path $certPath)) {
+            throw "Certificate file not found: $certPath"
+          }
+
+          Write-Host "Certificate restored to:"
+          Write-Host $certPath
+        working-directory: ${{ github.workspace }}
+        shell: pwsh
+
+      - name: Import Certificate
+        id: import_cert
+        shell: pwsh
+        working-directory: ${{ github.workspace }}
+        run: |
+          $certPath = "$env:GITHUB_WORKSPACE\cert.pfx"
+
+          $password = ConvertTo-SecureString `
+            "${{ secrets.PFX_PASSWORD }}" `
+            -AsPlainText `
+            -Force
+
+          $cert = Import-PfxCertificate `
+            -FilePath $certPath `
+            -CertStoreLocation "Cert:\CurrentUser\My" `
+            -Password $password
+
+          if (-not $cert) {
+            throw "Import-PfxCertificate failed."
+          }
+
+          $thumb = $cert.Thumbprint
+          Write-Host "Certificate imported."
+          Write-Host "Thumbprint: $thumb"
+
+          echo "thumbprint=$thumb" >> $env:GITHUB_OUTPUT
+
+      - name: Show Installed Certificates
+        shell: pwsh
+        run: |
+          Get-ChildItem Cert:\CurrentUser\My |
+            Select Subject, Thumbprint
+
+      - name: Generate package metadata
+        id: meta
+        shell: pwsh
+        run: |
+          $dateYear = Get-Date -Format yyyy
+          $dateMonth = (Get-Date).Month
+          $dateDay = (Get-Date).Day
+          $date = Get-Date -Format yyyyMMdd
+          $shortSha = "${{ github.sha }}".Substring(0, 7)
+          $name = "WinUIWorkTests.Canary_${date}_${{ matrix.platform }}_${shortSha}"
+          $version = "$dateYear.$dateMonth.$dateDay.${shortSha}"
+          "date=$date" >> $env:GITHUB_OUTPUT
+          "package_name=$name" >> $env:GITHUB_OUTPUT
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Build MSIX
+        shell: pwsh
+        working-directory: ${{ github.workspace }}
+        run: |
+          msbuild WinUI3WorkTests\WinUI3WorkTests.vcxproj `
+            /p:Configuration=${{ matrix.configuration }} `
+            /p:Platform=${{ matrix.platform }} `
+            /p:GenerateAppxPackageOnBuild=true `
+            /p:UapAppxPackageBuildMode=SideloadOnly `
+            /p:AppxPackageDir=AppPackages\ `
+            /p:AppxPackageVersion=${{ steps.meta.outputs.version }} `
+            /p:AppxPackageSigningEnabled=true `
+            /p:PackageCertificateThumbprint="${{ steps.import_cert.outputs.thumbprint }}" `
+            /p:PackageCertificateKeyFile= `
+            /p:PackageCertificatePassword= `
+            /m
+
+      - name: Cleanup certificate
+        if: always()
+        shell: pwsh
+        run: |
+          $thumb = "${{ steps.import_cert.outputs.thumbprint }}"
+          if ($thumb) {
+            Get-ChildItem Cert:\CurrentUser\My |
+              Where-Object Thumbprint -eq $thumb |
+              Remove-Item -Force -ErrorAction SilentlyContinue
+          }
+
+          Remove-Item "$env:GITHUB_WORKSPACE\cert.pfx" -Force -ErrorAction SilentlyContinue
+
+      - name: Copy SideloadReadme
+        shell: pwsh
+        run: Copy-Item SideloadReadme.md WinUIWorkTests\AppPackages\SideloadReadme.md -Force
+
+      - name: Pack 7z
+        shell: pwsh
+        run: |
+          if (-not (Get-Command 7z -ErrorAction SilentlyContinue)) {
+            choco install 7zip -y
+          }
+
+          $archive = "${{ steps.meta.outputs.package_name }}.7z"
+          7z a -t7z -mx=9 $archive "WinUIWorkTests\AppPackages\*"
+          New-Item -ItemType Directory -Path out -Force | Out-Null
+          Move-Item $archive out\
+
+      - name: Upload Canary artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ steps.meta.outputs.package_name }}
+          path: out\*.7z
+          if-no-files-found: error
+          retention-days: 14
+          

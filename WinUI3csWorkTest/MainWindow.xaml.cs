@@ -30,5 +30,14 @@ namespace WinUI3csWorkTest
             ExtendsContentIntoTitleBar = true;
         }
         public IThemeService? AppThemeService => (Application.Current as App)?.ThemeService;
+
+        private static int _clicks = 0;
+
+        private void RepeatButton_Click(object sender, RoutedEventArgs e)
+        {
+            _clicks += 1;
+            progressBar1.Value = _clicks;
+            if (_clicks >= progressBar1.Maximum) _clicks = 0;
+        }
     }
 }

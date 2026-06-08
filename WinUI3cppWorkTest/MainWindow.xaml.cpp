@@ -189,3 +189,8 @@ namespace winrt::WinUI3cppWorkTest::implementation
 	}
 
 }
+
+void winrt::WinUI3cppWorkTest::implementation::MainWindow::Button2_PointerEntered(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e)
+{
+
+}
