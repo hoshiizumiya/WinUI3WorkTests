@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Window
+    x:Class="WinUI3cppWorkTest.DevWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:WinUI3cppWorkTest"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="DevWindow"
+    mc:Ignorable="d">
+
+    <Grid>
+        <Expander Header="Expander Header" IsExpanded="True">
+            <Button Click="Button_Click" Content="Click Me">
+                <Button.Flyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem
+                            Click="MenuFlyoutItem_Click"
+                            FontSize="{x:Bind TestDouble}"
+                            Text="Reset" />
+                        <MenuFlyoutSeparator />
+                        <ToggleMenuFlyoutItem
+                            x:Name="BindItem"
+                            x:Load="False"
+                            IsChecked="True"
+                            Text="Repeat" />
+                        <ToggleMenuFlyoutItem IsChecked="True" Text="Shuffle" />
+                    </MenuFlyout>
+                </Button.Flyout>
+
+            </Button>
+        </Expander>
+    </Grid>
+</Window>

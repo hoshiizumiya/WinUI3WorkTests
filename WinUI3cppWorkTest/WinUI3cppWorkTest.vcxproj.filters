@@ -5,6 +5,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainWindow.xaml" />
+    <Page Include="DevWindow.xaml" />
+    <Page Include="AddingAnimatediconButton.xaml">
+      <Filter>Samples\AnimatedIcon</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />
@@ -42,6 +46,12 @@
   <ItemGroup>
     <Filter Include="Assets">
       <UniqueIdentifier>{a1fd3c3c-7f1f-420e-9135-f0ac2a719bca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Samples">
+      <UniqueIdentifier>{56ad6681-29ac-4b0a-a2ef-9c94f3fb6e22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Samples\AnimatedIcon">
+      <UniqueIdentifier>{67ca6830-5b9c-4d09-a7f7-c81abeb9190c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

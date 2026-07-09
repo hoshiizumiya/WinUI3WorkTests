@@ -63,5 +63,8 @@
                 <RepeatButton Click="RepeatButton_Click" Content="Press and hold" />
             </StackPanel>
         </StackPanel>
+        <StackPanel x:Name="FontTest" Grid.Row="3">
+            <TextBlock Text="Indeterminate Progress Bar" />
+        </StackPanel>
     </Grid>
 </Window>

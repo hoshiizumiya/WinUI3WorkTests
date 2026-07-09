@@ -1,6 +1,7 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
+#include "DevWindow.xaml.h"
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -39,5 +40,13 @@ namespace winrt::WinUI3cppWorkTest::implementation
     {
         window = make<MainWindow>();
         window.Activate();
+
+        //MainWindow mainWindow;
+
+		//com_ptr<implementation::DevWindow> devWindow;
+  //      devWindow->Activate();
+
+        auto devWindow = make<implementation::DevWindow>();
+		devWindow.Activate();
     }
 }

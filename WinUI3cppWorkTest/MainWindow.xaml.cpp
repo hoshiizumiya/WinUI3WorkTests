@@ -39,6 +39,10 @@ namespace winrt::WinUI3cppWorkTest::implementation
 		LocalFolder().Text(winrt::Microsoft::Windows::Storage::ApplicationData::GetDefault().LocalPath());
 		// Why this is null?
 		SharedFolder().Text(winrt::Microsoft::Windows::Storage::ApplicationData::GetDefault().SharedLocalPath());
+
+		constexpr wchar_t const* wideStringView = L"Wide string view test";
+		const winrt::hstring hstr = wideStringView;
+
 	}
 
 	std::vector<std::wstring> MainWindow::GetLocalIPv6Addresses()
@@ -130,28 +134,28 @@ namespace winrt::WinUI3cppWorkTest::implementation
 
 		// 关闭逻辑（带返回值的地方你可以记录结果）
 		auto closeWith = [owner, ownerRoot, dialog](bool /*accepted*/)
-		{
-			//ownerRoot.IsEnabled(true);
-			owner.Activate(); // 把焦点还给父窗口
-			dialog.Close();
-			// TODO: 在这里处理 accepted（确定/取消）的结果
-		};
+			{
+				//ownerRoot.IsEnabled(true);
+				owner.Activate(); // 把焦点还给父窗口
+				dialog.Close();
+				// TODO: 在这里处理 accepted（确定/取消）的结果
+			};
 
 		okBtn.Click([=](IInspectable const&, RoutedEventArgs const&)
-		{
-			closeWith(true);
-		});
+					{
+						closeWith(true);
+					});
 		cancelBtn.Click([=](IInspectable const&, RoutedEventArgs const&)
-		{
-			closeWith(false);
-		});
+						{
+							closeWith(false);
+						});
 
 		// 用户用 Alt+F4 或标题栏关闭按钮关闭时，确保恢复父窗口
 		dialog.Closed([=](auto&&, auto&&)
-		{
-			//ownerRoot.IsEnabled(true);this func may be deprecated
-			owner.Activate();
-		});
+					  {
+						  //ownerRoot.IsEnabled(true);this func may be deprecated
+						  owner.Activate();
+					  });
 
 		// 5) 尺寸与居中到父窗口
 		const int width = 2120;

@@ -1,0 +1,11 @@
+﻿namespace WinUI3cppWorkTest
+{
+	[default_interface]
+	runtimeclass DevWindow : Microsoft.UI.Xaml.Window
+	{
+		DevWindow();
+
+		Boolean BindTestButton{ get; };
+		Double TestDouble;
+	}
+}
