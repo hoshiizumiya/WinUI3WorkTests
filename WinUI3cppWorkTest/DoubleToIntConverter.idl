@@ -1,0 +1,8 @@
+﻿namespace WinUI3cppWorkTest
+{
+    [default_interface]
+    runtimeclass DoubleToIntConverter : Microsoft.UI.Xaml.Data.IValueConverter
+    {
+        DoubleToIntConverter();
+    }
+}

@@ -1,6 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include "App.xaml.g.h"
+#include "DoubleToIntConverter.h"
 
 namespace winrt::WinUI3cppWorkTest::implementation
 {
