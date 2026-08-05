@@ -10,6 +10,95 @@
     mc:Ignorable="d">
 
     <StackPanel>
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Orientation="Vertical"
+            Spacing="24">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="Startup Private Memory:" />
+                <TextBlock x:Name="StartupPrivateMemoryTextBlock" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock VerticalAlignment="Center" Text="Current Private Memory:" />
+                <Border Padding="4" Background="SteelBlue">
+                    <TextBlock x:Name="CurrentPrivateMemoryTextBlock" />
+                </Border>
+            </StackPanel>
+
+            <Border
+                Padding="6"
+                BorderBrush="SteelBlue"
+                BorderThickness="2">
+                <StackPanel Orientation="Vertical" Spacing="12">
+                    <TextBlock Text="Content SVG Image" />
+                    <Image
+                        Width="64"
+                        Height="64"
+                        HorizontalAlignment="Left"
+                        Source="ms-appx:///content.svg" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="6"
+                BorderBrush="SteelBlue"
+                BorderThickness="2">
+                <StackPanel Orientation="Vertical" Spacing="12">
+                    <TextBlock Text="Embedded SVG Image" />
+                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="Single SvgImageSource. Calls SetSourceAsync each button click." />
+                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="Memory increases slightly." />
+
+                    <Button Click="ButtonReload_Click" Content="Load Embedded Image" />
+
+                    <Image
+                        x:Name="EmbeddedSvgImage1"
+                        Width="64"
+                        Height="64"
+                        HorizontalAlignment="Left" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="6"
+                BorderBrush="SteelBlue"
+                BorderThickness="2">
+                <StackPanel Orientation="Vertical" Spacing="12">
+                    <TextBlock Text="Embedded SVG Image" />
+                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="Creates new SvgImageSource each button click. Source updated on button click." />
+                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="Memory increases more." />
+
+                    <Button Click="ButtonRecreate_Click" Content="Load Embedded Image" />
+
+                    <Image
+                        x:Name="EmbeddedSvgImage2"
+                        Width="64"
+                        Height="64"
+                        HorizontalAlignment="Left" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="6"
+                BorderBrush="SteelBlue"
+                BorderThickness="2">
+                <StackPanel Orientation="Vertical" Spacing="12">
+                    <TextBlock Text="Embedded SVG Image" />
+                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="Creates new SvgImageSource each button click. Source updated via dispatch." />
+                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="Memory increases by a lot." />
+
+                    <Button Click="ButtonRecreateDispatch_Click" Content="Load Embedded Image" />
+
+                    <Image
+                        x:Name="EmbeddedSvgImage3"
+                        Width="64"
+                        Height="64"
+                        HorizontalAlignment="Left" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
         <Expander Header="Expander Header" IsExpanded="True">
             <Button Click="Button_Click" Content="Click Me">
                 <Button.Flyout>

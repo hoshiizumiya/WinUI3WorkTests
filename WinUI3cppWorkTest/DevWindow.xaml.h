@@ -2,12 +2,21 @@
 
 #include "DevWindow.g.h"
 
+#include <winrt/Microsoft.UI.Dispatching.h>
+#include <winrt/Microsoft.UI.Xaml.h>
+#include <winrt/Microsoft.UI.Xaml.Controls.h>
+#include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
+
 namespace winrt::WinUI3cppWorkTest::implementation
 {
     struct DevWindow : DevWindowT<DevWindow>
     {
     public:
         DevWindow();
+
+        void ButtonReload_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        void ButtonRecreate_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        void ButtonRecreateDispatch_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
 
         bool BindTestButton();
 
@@ -39,6 +48,14 @@ namespace winrt::WinUI3cppWorkTest::implementation
         static constexpr wchar_t InsideStateName[] = L"Inside";
         static constexpr wchar_t OutsideStateName[] = L"Outside";
         static constexpr wchar_t DropHereText[] = L"Drop here";
+
+        winrt::Microsoft::UI::Dispatching::DispatcherQueue m_queue{ nullptr };
+        winrt::Microsoft::UI::Dispatching::DispatcherQueueTimer m_timer{ nullptr };
+        winrt::Microsoft::UI::Xaml::Media::Imaging::SvgImageSource m_svgImageSource{ nullptr };
+
+        static winrt::Windows::Foundation::IAsyncAction LoadEmbeddedImage(
+            winrt::Microsoft::UI::Xaml::Media::Imaging::SvgImageSource svgImageSource,
+            winrt::Microsoft::UI::Xaml::Controls::Image image = nullptr);
     };
 }
 

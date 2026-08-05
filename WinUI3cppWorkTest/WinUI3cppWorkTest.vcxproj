@@ -267,4 +267,12 @@
       <Version>1.0.0</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="content.svg">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </None>
+    <None Include="embedded.svg">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </None>
+  </ItemGroup>
 </Project>

@@ -70,4 +70,8 @@
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="content.svg" />
+    <None Include="embedded.svg" />
+  </ItemGroup>
 </Project>
