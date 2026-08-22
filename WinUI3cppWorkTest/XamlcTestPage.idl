@@ -1,0 +1,9 @@
+namespace WinUI3cppWorkTest
+{
+    [default_interface]
+    runtimeclass XamlcTestPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        XamlcTestPage();
+        Int32 MyProperty;
+    }
+}

@@ -1,0 +1,8 @@
+﻿namespace WinUI3cppWorkTest
+{
+    [default_interface]
+    runtimeclass TestDialog : Microsoft.UI.Xaml.Controls.ContentDialog
+    {
+        TestDialog();
+    }
+}

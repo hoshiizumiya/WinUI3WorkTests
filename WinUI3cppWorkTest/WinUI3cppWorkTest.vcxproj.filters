@@ -11,6 +11,8 @@
     </Page>
     <Page Include="Themes\Generic.xaml" />
     <Page Include="TestControl.xaml" />
+    <Page Include="XamlcTestPage.xaml" />
+    <Page Include="TestDialog.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />
@@ -73,5 +75,8 @@
   <ItemGroup>
     <None Include="content.svg" />
     <None Include="embedded.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Include="String\zh_CN\Resources.resw" />
   </ItemGroup>
 </Project>
