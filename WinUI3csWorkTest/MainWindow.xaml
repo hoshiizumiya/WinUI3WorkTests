@@ -51,6 +51,7 @@
                 <ComboBox x:Name="ScenarioSelector" SelectedIndex="0">
                     <ComboBoxItem Content="Move backdrop content" />
                     <ComboBoxItem Content="Move effect visuals" />
+                    <ComboBoxItem Content="Move effects over real controls" />
                 </ComboBox>
             </StackPanel>
 
@@ -246,6 +247,138 @@
                             x:Name="MovingSelectedEffectLabel"
                             Title="GaussianBlurEffect"
                             Subtitle="Moving visual; static backdrop" />
+                    </Border>
+                </Grid>
+            </Grid>
+
+            <!-- Scenario 3: move the effect-bearing visuals over real XAML controls. -->
+            <Grid
+                x:Name="MovingEffectOverControlsTestRoot"
+                Visibility="Collapsed">
+                <Border x:Name="LiveControlsWallpaperBackground" />
+
+                <Grid Padding="28" ColumnSpacing="18">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Spacing="12">
+                        <TextBlock
+                            FontSize="22"
+                            FontWeight="SemiBold"
+                            Text="General" />
+                        <Button Content="Open settings" />
+                        <ToggleSwitch Header="Enable feature" IsOn="True" />
+                        <CheckBox Content="Keep history" IsChecked="True" />
+                        <RadioButton Content="Recommended mode" IsChecked="True" />
+                        <Slider Header="Opacity" Minimum="0" Maximum="100" Value="62" />
+                        <ProgressBar Height="8" Maximum="100" Value="72" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Spacing="12">
+                        <TextBlock
+                            FontSize="22"
+                            FontWeight="SemiBold"
+                            Text="Network" />
+                        <TextBox Header="Server" Text="example.contoso.test" />
+                        <PasswordBox Header="Token" Password="backdrop-sample" />
+                        <ComboBox Header="Transport" SelectedIndex="1">
+                            <ComboBoxItem Content="TCP" />
+                            <ComboBoxItem Content="QUIC" />
+                            <ComboBoxItem Content="WebSocket" />
+                        </ComboBox>
+                        <Button Content="Test connection" />
+                        <ToggleSwitch Header="Use system proxy" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Spacing="12">
+                        <TextBlock
+                            FontSize="22"
+                            FontWeight="SemiBold"
+                            Text="Downloads" />
+                        <Button Content="Add download" />
+                        <Button Content="Pause all" />
+                        <CheckBox Content="Seed after completion" IsChecked="True" />
+                        <Slider Header="Speed limit" Minimum="0" Maximum="100" Value="83" />
+                        <ProgressRing
+                            Width="32"
+                            Height="32"
+                            HorizontalAlignment="Left"
+                            IsActive="True" />
+                        <InfoBar
+                            IsOpen="True"
+                            IsClosable="False"
+                            Message="Real WinUI controls behind the moving backdrop." />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="3" Spacing="12">
+                        <TextBlock
+                            FontSize="22"
+                            FontWeight="SemiBold"
+                            Text="Appearance" />
+                        <ToggleButton Content="Toggle button" IsChecked="True" />
+                        <DropDownButton Content="Theme">
+                            <DropDownButton.Flyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Light" />
+                                    <MenuFlyoutItem Text="Dark" />
+                                </MenuFlyout>
+                            </DropDownButton.Flyout>
+                        </DropDownButton>
+                        <CalendarDatePicker Header="Date" />
+                        <RatingControl Value="4" />
+                        <Button Content="Apply changes" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid
+                    x:Name="LiveControlsEffectHost"
+                    Width="320"
+                    Height="540"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    IsHitTestVisible="False">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Border
+                        x:Name="LiveControlsRawBackdropCard"
+                        Grid.Row="0"
+                        Margin="8"
+                        BorderBrush="#E8FFFFFF"
+                        BorderThickness="1">
+                        <local:EffectCardLabel
+                            Title="Raw CompositionBackdropBrush"
+                            Subtitle="Moving visual over real controls" />
+                    </Border>
+
+                    <Border
+                        x:Name="LiveControlsAcrylicCard"
+                        Grid.Row="1"
+                        Margin="8"
+                        BorderBrush="#E8FFFFFF"
+                        BorderThickness="1">
+                        <local:EffectCardLabel
+                            Title="WinUI AcrylicBrush"
+                            Subtitle="Moving visual over real controls" />
+                    </Border>
+
+                    <Border
+                        x:Name="LiveControlsSelectedEffectCard"
+                        Grid.Row="2"
+                        Margin="8"
+                        BorderBrush="#E8FFFFFF"
+                        BorderThickness="1">
+                        <local:EffectCardLabel
+                            x:Name="LiveControlsSelectedEffectLabel"
+                            Title="GaussianBlurEffect"
+                            Subtitle="Moving visual over real controls" />
                     </Border>
                 </Grid>
             </Grid>

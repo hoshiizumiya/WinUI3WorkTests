@@ -51,14 +51,17 @@ public sealed partial class MainWindow : Window
     }
 
     private bool IsMovingEffectScenario => ScenarioSelector.SelectedIndex == 1;
+    private bool IsMovingEffectOverControlsScenario => ScenarioSelector.SelectedIndex == 2;
 
     private void ConfigureBaselineCards()
     {
         RawBackdropCard.Background = new BackdropEffectBrush(BackdropEffectKind.RawBackdrop);
         MovingRawBackdropCard.Background = new BackdropEffectBrush(BackdropEffectKind.RawBackdrop);
+        LiveControlsRawBackdropCard.Background = new BackdropEffectBrush(BackdropEffectKind.RawBackdrop);
 
         AcrylicCard.Background = CreateAcrylicBrush();
         MovingAcrylicCard.Background = CreateAcrylicBrush();
+        LiveControlsAcrylicCard.Background = CreateAcrylicBrush();
     }
 
     private static AcrylicBrush CreateAcrylicBrush()
@@ -77,8 +80,14 @@ public sealed partial class MainWindow : Window
         StopMotion();
 
         var movingEffects = IsMovingEffectScenario;
-        ScrollingBackdropTestRoot.Visibility = movingEffects ? Visibility.Collapsed : Visibility.Visible;
-        MovingEffectTestRoot.Visibility = movingEffects ? Visibility.Visible : Visibility.Collapsed;
+        var movingEffectsOverControls = IsMovingEffectOverControlsScenario;
+
+        ScrollingBackdropTestRoot.Visibility =
+            !movingEffects && !movingEffectsOverControls ? Visibility.Visible : Visibility.Collapsed;
+        MovingEffectTestRoot.Visibility =
+            movingEffects ? Visibility.Visible : Visibility.Collapsed;
+        MovingEffectOverControlsTestRoot.Visibility =
+            movingEffectsOverControls ? Visibility.Visible : Visibility.Collapsed;
 
         if (AutoMotionToggle.IsOn)
         {
@@ -112,9 +121,11 @@ public sealed partial class MainWindow : Window
 
         SelectedEffectCard.Background = null;
         MovingSelectedEffectCard.Background = null;
+        LiveControlsSelectedEffectCard.Background = null;
 
         SelectedEffectCard.Background = new BackdropEffectBrush(kind);
         MovingSelectedEffectCard.Background = new BackdropEffectBrush(kind);
+        LiveControlsSelectedEffectCard.Background = new BackdropEffectBrush(kind);
 
         var (title, detail) = kind switch
         {
@@ -132,6 +143,8 @@ public sealed partial class MainWindow : Window
         SelectedEffectLabel.Subtitle = $"Fixed visual; moving backdrop. {detail}";
         MovingSelectedEffectLabel.Title = title;
         MovingSelectedEffectLabel.Subtitle = $"Moving visual; static backdrop. {detail}";
+        LiveControlsSelectedEffectLabel.Title = title;
+        LiveControlsSelectedEffectLabel.Subtitle = $"Moving visual over real controls. {detail}";
     }
 
     private async Task LoadWallpaperAndPopulateRowsAsync()
@@ -162,6 +175,9 @@ public sealed partial class MainWindow : Window
         PopulateBackdropRows(wallpaper);
         StaticWallpaperBackground.Background = wallpaper is null
             ? CreateFallbackBrush(0)
+            : CreateWallpaperBrush(wallpaper, AlignmentY.Center);
+        LiveControlsWallpaperBackground.Background = wallpaper is null
+            ? CreateFallbackBrush(1)
             : CreateWallpaperBrush(wallpaper, AlignmentY.Center);
     }
 
@@ -301,7 +317,11 @@ public sealed partial class MainWindow : Window
     {
         if (IsMovingEffectScenario)
         {
-            StartMovingEffectAnimation();
+            StartMovingEffectAnimation(MovingEffectHost, MovingEffectTestRoot);
+        }
+        else if (IsMovingEffectOverControlsScenario)
+        {
+            StartMovingEffectAnimation(LiveControlsEffectHost, MovingEffectOverControlsTestRoot);
         }
         else
         {
@@ -313,19 +333,23 @@ public sealed partial class MainWindow : Window
     {
         _scrollTimer.Stop();
 
-        var visual = ElementCompositionPreview.GetElementVisual(MovingEffectHost);
-        visual.StopAnimation("Offset.X");
+        var movingVisual = ElementCompositionPreview.GetElementVisual(MovingEffectHost);
+        movingVisual.StopAnimation("Offset.X");
+
+        var liveControlsVisual = ElementCompositionPreview.GetElementVisual(LiveControlsEffectHost);
+        liveControlsVisual.StopAnimation("Offset.X");
+
         _movingEffectAnimation = null;
     }
 
-    private void StartMovingEffectAnimation()
+    private void StartMovingEffectAnimation(FrameworkElement effectHost, FrameworkElement testRoot)
     {
-        var visual = ElementCompositionPreview.GetElementVisual(MovingEffectHost);
+        var visual = ElementCompositionPreview.GetElementVisual(effectHost);
         var compositor = visual.Compositor;
 
         visual.StopAnimation("Offset.X");
 
-        var availableWidth = Math.Max(0.0, MovingEffectTestRoot.ActualWidth - MovingEffectHost.ActualWidth);
+        var availableWidth = Math.Max(0.0, testRoot.ActualWidth - effectHost.ActualWidth);
         var start = 20.0f;
         var end = (float)Math.Max(start, availableWidth - 20.0);
 
@@ -371,8 +395,11 @@ public sealed partial class MainWindow : Window
         _scrollDirection = 1.0;
         BackdropSourceScroller.ChangeView(null, 0, null, true);
 
-        var visual = ElementCompositionPreview.GetElementVisual(MovingEffectHost);
-        visual.Offset = new Vector3(20.0f, visual.Offset.Y, visual.Offset.Z);
+        var movingVisual = ElementCompositionPreview.GetElementVisual(MovingEffectHost);
+        movingVisual.Offset = new Vector3(20.0f, movingVisual.Offset.Y, movingVisual.Offset.Z);
+
+        var liveControlsVisual = ElementCompositionPreview.GetElementVisual(LiveControlsEffectHost);
+        liveControlsVisual.Offset = new Vector3(20.0f, liveControlsVisual.Offset.Y, liveControlsVisual.Offset.Z);
 
         if (restart)
         {
