@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Window
     x:Class="WinUI3csWorkTest.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -16,8 +16,10 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Snap.Hutao uses an opaque XAML underlay only for BackdropType.None.
-             Mica/Acrylic make the XAML island transparent instead. -->
+        <!--
+            Snap.Hutao uses an opaque XAML underlay only for BackdropType.None.
+            Mica/Acrylic make the XAML island transparent instead.
+        -->
         <Border
             x:Name="OpaqueWindowUnderlay"
             Grid.RowSpan="3"
@@ -26,8 +28,8 @@
 
         <TitleBar
             x:Name="WindowTitleBar"
-            Grid.Row="0"
             Title="Composition backdrop invalidation repro"
+            Grid.Row="0"
             IsPaneToggleButtonVisible="True">
             <TitleBar.Resources>
                 <x:Double x:Key="TitleBarCompactHeight">44</x:Double>
@@ -55,9 +57,7 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock
-                                        VerticalAlignment="Center"
-                                        Text="Background task" />
+                                    <TextBlock VerticalAlignment="Center" Text="Background task" />
                                     <FontIcon
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
@@ -111,7 +111,10 @@
                     Text="Loading the current system wallpaper..." />
             </StackPanel>
 
-            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+            <StackPanel
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Spacing="2">
                 <TextBlock FontSize="12" Text="Scenario" />
                 <ComboBox x:Name="ScenarioSelector" SelectedIndex="0">
                     <ComboBoxItem Content="Move backdrop content" />
@@ -125,7 +128,10 @@
                 </ComboBox>
             </StackPanel>
 
-            <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="2">
+            <StackPanel
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                Spacing="2">
                 <TextBlock FontSize="12" Text="Native effect under test" />
                 <ComboBox x:Name="EffectSelector" SelectedIndex="0">
                     <ComboBoxItem Content="GaussianBlurEffect" />
@@ -146,7 +152,10 @@
                 IsOn="False"
                 Toggled="AutoMotionToggle_Toggled" />
 
-            <StackPanel Grid.Column="4" VerticalAlignment="Center" Spacing="2">
+            <StackPanel
+                Grid.Column="4"
+                VerticalAlignment="Center"
+                Spacing="2">
                 <TextBlock FontSize="12" Text="Motion speed" />
                 <Slider
                     x:Name="MotionSpeedSlider"
@@ -168,9 +177,7 @@
                 Orientation="Horizontal"
                 Spacing="16">
                 <StackPanel Spacing="2">
-                    <TextBlock
-                        FontSize="12"
-                        Text="Window SystemBackdrop" />
+                    <TextBlock FontSize="12" Text="Window SystemBackdrop" />
                     <ComboBox
                         x:Name="WindowBackdropSelector"
                         Width="170"
@@ -192,14 +199,15 @@
                 <TextBlock
                     MaxWidth="760"
                     VerticalAlignment="Bottom"
+                    FontSize="12"
                     Opacity="0.72"
-                    TextWrapping="Wrap"
-                    Text="Snap.Hutao: None = SystemBackdrop null + opaque root; Mica/Acrylic = non-null SystemBackdrop + transparent root. Turn the underlay off to reproduce that composition topology." />
+                    Text="For developer of Snap.Hutao: None = SystemBackdrop null + opaque root; Mica/Acrylic = non-null SystemBackdrop + transparent root. Turn the underlay off to reproduce that composition topology."
+                    TextWrapping="Wrap" />
             </StackPanel>
         </Grid>
 
         <Grid Grid.Row="2">
-            <!-- Scenario 1: the backdrop content moves while effect visuals remain fixed. -->
+            <!--  Scenario 1: the backdrop content moves while effect visuals remain fixed.  -->
             <Grid x:Name="ScrollingBackdropTestRoot">
                 <ScrollViewer
                     x:Name="BackdropSourceScroller"
@@ -229,9 +237,7 @@
                         Margin="8"
                         BorderBrush="#E8FFFFFF"
                         BorderThickness="1">
-                        <local:EffectCardLabel
-                            Title="Raw CompositionBackdropBrush"
-                            Subtitle="Fixed visual; moving backdrop" />
+                        <local:EffectCardLabel Title="Raw CompositionBackdropBrush" Subtitle="Fixed visual; moving backdrop" />
                     </Border>
 
                     <Border
@@ -240,9 +246,7 @@
                         Margin="8"
                         BorderBrush="#E8FFFFFF"
                         BorderThickness="1">
-                        <local:EffectCardLabel
-                            Title="WinUI AcrylicBrush"
-                            Subtitle="Fixed visual; moving backdrop" />
+                        <local:EffectCardLabel Title="WinUI AcrylicBrush" Subtitle="Fixed visual; moving backdrop" />
                     </Border>
 
                     <Border
@@ -259,10 +263,8 @@
                 </Grid>
             </Grid>
 
-            <!-- Scenario 2: the backdrop is static and the effect-bearing XAML visuals move. -->
-            <Grid
-                x:Name="MovingEffectTestRoot"
-                Visibility="Collapsed">
+            <!--  Scenario 2: the backdrop is static and the effect-bearing XAML visuals move.  -->
+            <Grid x:Name="MovingEffectTestRoot" Visibility="Collapsed">
                 <Border x:Name="StaticWallpaperBackground" />
 
                 <Grid IsHitTestVisible="False">
@@ -326,9 +328,7 @@
                         Margin="8"
                         BorderBrush="#E8FFFFFF"
                         BorderThickness="1">
-                        <local:EffectCardLabel
-                            Title="Raw CompositionBackdropBrush"
-                            Subtitle="Moving visual; static backdrop" />
+                        <local:EffectCardLabel Title="Raw CompositionBackdropBrush" Subtitle="Moving visual; static backdrop" />
                     </Border>
 
                     <Border
@@ -337,9 +337,7 @@
                         Margin="8"
                         BorderBrush="#E8FFFFFF"
                         BorderThickness="1">
-                        <local:EffectCardLabel
-                            Title="WinUI AcrylicBrush"
-                            Subtitle="Moving visual; static backdrop" />
+                        <local:EffectCardLabel Title="WinUI AcrylicBrush" Subtitle="Moving visual; static backdrop" />
                     </Border>
 
                     <Border
@@ -356,10 +354,8 @@
                 </Grid>
             </Grid>
 
-            <!-- Scenario 3: move the effect-bearing visuals over real XAML controls. -->
-            <Grid
-                x:Name="MovingEffectOverControlsTestRoot"
-                Visibility="Collapsed">
+            <!--  Scenario 3: move the effect-bearing visuals over real XAML controls.  -->
+            <Grid x:Name="MovingEffectOverControlsTestRoot" Visibility="Collapsed">
                 <Border x:Name="LiveControlsWallpaperBackground" />
 
                 <Grid Padding="28" ColumnSpacing="18">
@@ -379,8 +375,15 @@
                         <ToggleSwitch Header="Enable feature" IsOn="True" />
                         <CheckBox Content="Keep history" IsChecked="True" />
                         <RadioButton Content="Recommended mode" IsChecked="True" />
-                        <Slider Header="Opacity" Minimum="0" Maximum="100" Value="62" />
-                        <ProgressBar Height="8" Maximum="100" Value="72" />
+                        <Slider
+                            Header="Opacity"
+                            Maximum="100"
+                            Minimum="0"
+                            Value="62" />
+                        <ProgressBar
+                            Height="8"
+                            Maximum="100"
+                            Value="72" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Spacing="12">
@@ -407,15 +410,19 @@
                         <Button Content="Add download" />
                         <Button Content="Pause all" />
                         <CheckBox Content="Seed after completion" IsChecked="True" />
-                        <Slider Header="Speed limit" Minimum="0" Maximum="100" Value="83" />
+                        <Slider
+                            Header="Speed limit"
+                            Maximum="100"
+                            Minimum="0"
+                            Value="83" />
                         <ProgressRing
                             Width="32"
                             Height="32"
                             HorizontalAlignment="Left"
                             IsActive="True" />
                         <InfoBar
-                            IsOpen="True"
                             IsClosable="False"
+                            IsOpen="True"
                             Message="Real WinUI controls behind the moving backdrop." />
                     </StackPanel>
 
@@ -458,9 +465,7 @@
                         Margin="8"
                         BorderBrush="#E8FFFFFF"
                         BorderThickness="1">
-                        <local:EffectCardLabel
-                            Title="Raw CompositionBackdropBrush"
-                            Subtitle="Moving visual over real controls" />
+                        <local:EffectCardLabel Title="Raw CompositionBackdropBrush" Subtitle="Moving visual over real controls" />
                     </Border>
 
                     <Border
@@ -469,9 +474,7 @@
                         Margin="8"
                         BorderBrush="#E8FFFFFF"
                         BorderThickness="1">
-                        <local:EffectCardLabel
-                            Title="WinUI AcrylicBrush"
-                            Subtitle="Moving visual over real controls" />
+                        <local:EffectCardLabel Title="WinUI AcrylicBrush" Subtitle="Moving visual over real controls" />
                     </Border>
 
                     <Border
@@ -488,14 +491,14 @@
                 </Grid>
             </Grid>
 
-            <!-- Scenario 4: the effect itself is a child of ScrollViewer content.
-                 Scrolling moves the effect through ScrollViewer/DManip ancestor transforms. -->
-            <Grid
-                x:Name="ScrollContainedEffectTestRoot"
-                Visibility="Collapsed">
+            <!--
+                Scenario 4: the effect itself is a child of ScrollViewer content.
+                Scrolling moves the effect through ScrollViewer/DManip ancestor transforms.
+            -->
+            <Grid x:Name="ScrollContainedEffectTestRoot" Visibility="Collapsed">
                 <Border x:Name="ScrollContainedFixedWallpaperBackground" />
 
-                <!-- Fixed content behind the transparent ScrollViewer. These controls do not move. -->
+                <!--  Fixed content behind the transparent ScrollViewer. These controls do not move.  -->
                 <Grid IsHitTestVisible="False">
                     <StackPanel
                         Margin="32,28,0,0"
@@ -530,16 +533,16 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- Important: Background is intentionally ordinary/transparent.
-                     The backdrop effect is on a CHILD inside the scrolling content. -->
+                <!--
+                    Important: Background is intentionally ordinary/transparent.
+                    The backdrop effect is on a CHILD inside the scrolling content.
+                -->
                 <ScrollViewer
                     x:Name="ScrollContainedEffectScroller"
                     Background="Transparent"
                     HorizontalScrollBarVisibility="Disabled"
                     VerticalScrollBarVisibility="Visible">
-                    <StackPanel
-                        Padding="24"
-                        Spacing="18">
+                    <StackPanel Padding="24" Spacing="18">
 
                         <Border Height="240" Background="Transparent">
                             <TextBlock
@@ -551,7 +554,7 @@
                         </Border>
 
                         <Grid Height="520">
-                            <!-- Real controls that move in the same ScrollViewer subtree. -->
+                            <!--  Real controls that move in the same ScrollViewer subtree.  -->
                             <Grid Padding="16" ColumnSpacing="18">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
@@ -560,7 +563,10 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" Spacing="12">
-                                    <TextBlock FontSize="22" FontWeight="SemiBold" Text="Scrolling controls A" />
+                                    <TextBlock
+                                        FontSize="22"
+                                        FontWeight="SemiBold"
+                                        Text="Scrolling controls A" />
                                     <Button Content="Button A1" />
                                     <ToggleSwitch Header="Toggle A2" IsOn="True" />
                                     <CheckBox Content="Check A3" IsChecked="True" />
@@ -568,19 +574,32 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Spacing="12">
-                                    <TextBlock FontSize="22" FontWeight="SemiBold" Text="Scrolling controls B" />
+                                    <TextBlock
+                                        FontSize="22"
+                                        FontWeight="SemiBold"
+                                        Text="Scrolling controls B" />
                                     <Button Content="Button B1" />
                                     <ComboBox Header="Combo B2" SelectedIndex="1">
                                         <ComboBoxItem Content="First" />
                                         <ComboBoxItem Content="Second" />
                                         <ComboBoxItem Content="Third" />
                                     </ComboBox>
-                                    <Slider Header="Slider B3" Minimum="0" Maximum="100" Value="68" />
-                                    <ProgressBar Height="8" Maximum="100" Value="54" />
+                                    <Slider
+                                        Header="Slider B3"
+                                        Maximum="100"
+                                        Minimum="0"
+                                        Value="68" />
+                                    <ProgressBar
+                                        Height="8"
+                                        Maximum="100"
+                                        Value="54" />
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="2" Spacing="12">
-                                    <TextBlock FontSize="22" FontWeight="SemiBold" Text="Scrolling controls C" />
+                                    <TextBlock
+                                        FontSize="22"
+                                        FontWeight="SemiBold"
+                                        Text="Scrolling controls C" />
                                     <Button Content="Button C1" />
                                     <RadioButton Content="Radio C2" IsChecked="True" />
                                     <CalendarDatePicker Header="Date C3" />
@@ -588,11 +607,11 @@
                                 </StackPanel>
                             </Grid>
 
-                            <!-- These effect-bearing elements are themselves moved by the ScrollViewer. -->
+                            <!--  These effect-bearing elements are themselves moved by the ScrollViewer.  -->
                             <Grid
                                 Margin="40,220,40,18"
-                                IsHitTestVisible="False"
-                                ColumnSpacing="12">
+                                ColumnSpacing="12"
+                                IsHitTestVisible="False">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition />
@@ -604,9 +623,7 @@
                                     Grid.Column="0"
                                     BorderBrush="#E8FFFFFF"
                                     BorderThickness="1">
-                                    <local:EffectCardLabel
-                                        Title="Raw CompositionBackdropBrush"
-                                        Subtitle="Child of ScrollViewer content" />
+                                    <local:EffectCardLabel Title="Raw CompositionBackdropBrush" Subtitle="Child of ScrollViewer content" />
                                 </Border>
 
                                 <Border
@@ -614,9 +631,7 @@
                                     Grid.Column="1"
                                     BorderBrush="#E8FFFFFF"
                                     BorderThickness="1">
-                                    <local:EffectCardLabel
-                                        Title="WinUI AcrylicBrush"
-                                        Subtitle="Child of ScrollViewer content" />
+                                    <local:EffectCardLabel Title="WinUI AcrylicBrush" Subtitle="Child of ScrollViewer content" />
                                 </Border>
 
                                 <Border
@@ -665,23 +680,17 @@
                 </Border>
             </Grid>
 
-            <!-- Scenario 5: mirrors Snap.Hutao's MainView -> NavigationView -> Frame ->
-                 page ScrollViewer hierarchy and reuses the same LiquidGlassBrush resources. -->
-            <local:HutaoHierarchyReproControl
-                x:Name="HutaoHierarchyRepro"
-                Visibility="Collapsed" />
+            <!--
+                Scenario 5: mirrors Snap.Hutao's MainView -> NavigationView -> Frame ->
+                page ScrollViewer hierarchy and reuses the same LiquidGlassBrush resources.
+            -->
+            <local:HutaoHierarchyReproControl x:Name="HutaoHierarchyRepro" Visibility="Collapsed" />
 
-            <local:TitleBarSingleGlassReproControl
-                x:Name="TitleBarSingleGlassRepro"
-                Visibility="Collapsed" />
+            <local:TitleBarSingleGlassReproControl x:Name="TitleBarSingleGlassRepro" Visibility="Collapsed" />
 
-            <local:LaunchGameShadowReproControl
-                x:Name="LaunchGameShadowRepro"
-                Visibility="Collapsed" />
+            <local:LaunchGameShadowReproControl x:Name="LaunchGameShadowRepro" Visibility="Collapsed" />
 
-            <local:NativeBackdropSystemBackdropReproControl
-                x:Name="NativeBackdropSystemBackdropRepro"
-                Visibility="Collapsed" />
+            <local:NativeBackdropSystemBackdropReproControl x:Name="NativeBackdropSystemBackdropRepro" Visibility="Collapsed" />
         </Grid>
     </Grid>
 </Window>
