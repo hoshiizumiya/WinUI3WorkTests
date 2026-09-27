@@ -1,0 +1,8 @@
+﻿namespace WinUI3cppWorkTest
+{
+    [default_interface]
+    runtimeclass WETestWindow : WinUI3Package.WindowEx
+    {
+        WETestWindow();
+    }
+}

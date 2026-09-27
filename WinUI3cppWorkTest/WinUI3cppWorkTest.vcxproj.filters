@@ -13,6 +13,7 @@
     <Page Include="TestControl.xaml" />
     <Page Include="XamlcTestPage.xaml" />
     <Page Include="TestDialog.xaml" />
+    <Page Include="WETestWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />

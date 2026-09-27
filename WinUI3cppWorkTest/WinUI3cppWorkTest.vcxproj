@@ -149,6 +149,10 @@
       <DependentUpon>TestDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="WETestWindow.xaml.h">
+      <DependentUpon>WETestWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="XamlcTestPage.xaml.h">
       <DependentUpon>XamlcTestPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -170,6 +174,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\Generic.xaml" />
+    <Page Include="WETestWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="XamlcTestPage.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -204,6 +211,10 @@
       <DependentUpon>TestDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="WETestWindow.xaml.cpp">
+      <DependentUpon>WETestWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="XamlcTestPage.xaml.cpp">
       <DependentUpon>XamlcTestPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -232,6 +243,10 @@
     </Midl>
     <Midl Include="TestDialog.idl">
       <DependentUpon>TestDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="WETestWindow.idl">
+      <DependentUpon>WETestWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="XamlcTestPage.idl">
@@ -277,22 +292,25 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ItemGroup>
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4129.50" />
-    <PackageReference Include="Microsoft.Windows.AI.MachineLearning" Version="2.2.12" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4191.47" />
+    <PackageReference Include="Microsoft.Windows.AI.MachineLearning" Version="2.4.89" />
     <PackageReference Include="Microsoft.Windows.CppWinRT" Version="3.0.260818.1" />
     <PackageReference Include="Microsoft.Windows.ImplementationLibrary" Version="1.0.260126.7" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2526" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.7.260610101" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.4.0" />
-    <PackageReference Include="Microsoft.WindowsAppSDK.AI" Version="2.4.4" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2705" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.7.260903100">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.5.1" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.AI" Version="2.5.5" />
     <PackageReference Include="Microsoft.WindowsAppSDK.Base" Version="2.0.4" />
     <PackageReference Include="Microsoft.WindowsAppSDK.DWrite" Version="2.1.0" />
-    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="2.3.9" />
-    <PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.1.6" />
-    <PackageReference Include="Microsoft.WindowsAppSDK.Runtime" Version="2.4.0" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="2.3.12" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.1.9" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Runtime" Version="2.5.1" />
     <PackageReference Include="Microsoft.WindowsAppSDK.Widgets" Version="2.0.5" />
-    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="2.3.6" />
-    <PackageReference Include="WinUIEssential.WinUI3" Version="1.7.1" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="2.3.9" />
+    <PackageReference Include="WinUIEssential.WinUI3" Version="1.8.0" />
     <PackageReference Include="WinUIEssential.WinUI3.Svg">
       <Version>1.0.1</Version>
     </PackageReference>

@@ -2,6 +2,7 @@
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
 #include "DevWindow.xaml.h"
+#include "WETestWindow.xaml.h"
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -46,7 +47,10 @@ namespace winrt::WinUI3cppWorkTest::implementation
 		//com_ptr<implementation::DevWindow> devWindow;
   //      devWindow->Activate();
 
-        auto devWindow = make<implementation::DevWindow>();
-		devWindow.Activate();
+  //      auto devWindow = make<implementation::DevWindow>();
+		//devWindow.Activate();
+
+		auto weTestWindow = make<implementation::WETestWindow>();
+		weTestWindow.Activate();
     }
 }

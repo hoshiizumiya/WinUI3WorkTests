@@ -120,4 +120,7 @@
   <data name="ViewDevWindowSettingsCardOpenSpeedGraphWindow.Header" xml:space="preserve">
     <value>TestHeader</value>
   </data>
+  <data name="ViewDevWindowSettingsCard.Header" xml:space="preserve">
+    <value>ButtonSettingTestHeader</value>
+  </data>
 </root>

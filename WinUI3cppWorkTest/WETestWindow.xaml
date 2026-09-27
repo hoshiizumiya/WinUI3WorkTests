@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<essential:WindowEx
+    x:Class="WinUI3cppWorkTest.WETestWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:essential="using:WinUI3Package"
+    xmlns:local="using:WinUI3cppWorkTest"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="WETestWindow"
+    MinWidth="480"
+    MinHeight="360"
+    IsAlwaysOnTop="True"
+    mc:Ignorable="d">
+
+    <essential:WindowEx.SystemBackdrop>
+        <essential:MicaBackdropWithFallback>
+            <essential:MicaBackdropWithFallback.Fallback>
+                <DesktopAcrylicBackdrop />
+            </essential:MicaBackdropWithFallback.Fallback>
+        </essential:MicaBackdropWithFallback>
+    </essential:WindowEx.SystemBackdrop>
+
+    <essential:WindowEx.ContextMenu>
+        <essential:ModernStandardWindowContextMenu />
+    </essential:WindowEx.ContextMenu>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <essential:WindowCaptionButtonThemeWorkaround Window="{x:Bind Window}" />
+
+        <TitleBar
+            Title="Dev Window"
+            IsBackButtonVisible="False"
+            IsPaneToggleButtonVisible="False"
+            Subtitle="Developer test entry points" />
+
+        <ScrollView Grid.Row="1">
+            <StackPanel Margin="16" Spacing="10">
+                <essential:SettingsCard
+                    x:Uid="ViewDevWindowSettingsCardOpenSpeedGraphWindow"
+                    Description="Open the isolated static/dynamic Win2D graph test studio."
+                    Header="LiveGraph">
+                    <!--<Button
+                        Click="OpenLiveGraphTestWindow_Click"
+                        Content="Open test studio"
+                        Style="{StaticResource AccentButtonStyle}" />-->
+                </essential:SettingsCard>
+
+                <!--<essential:SettingsCard
+                    x:Uid="ViewDevWindowSettingsCardOpenOperationProgressDialog"
+                    Description="Show the operation progress dialog test."
+                    Header="Operation dialog">
+                    <Button Click="OpenOperationProgressDialog_Click" Content="Open dialog" />
+                </essential:SettingsCard>-->
+
+                <essential:SettingsCard
+                    x:Uid="ViewDevWindowSettingsCard"
+                    Description="Intentionally throw a XAML-facing exception."
+                    Header="Exception handling">
+                    <Button x:Uid="ViewDevWindowButton" Content="Trigger exception" />
+                </essential:SettingsCard>
+
+                <essential:SettingsCard Description="Send a test notification in the InfoBar." Header="Send a notification in the app">
+                    <Button Content="Send App Notify" />
+                </essential:SettingsCard>
+
+            </StackPanel>
+        </ScrollView>
+    </Grid>
+</essential:WindowEx>
