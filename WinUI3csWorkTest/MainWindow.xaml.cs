@@ -1,4 +1,4 @@
-﻿using Microsoft.UI;
+using Microsoft.UI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -17,6 +17,8 @@ namespace WinUI3csWorkTest;
 public sealed partial class MainWindow : Window
 {
     private const uint SpiGetDesktopWallpaper = 0x0073;
+    private const int BackdropRowCount = 12;
+
     private readonly DispatcherQueueTimer _scrollTimer;
     private double _scrollDirection = 1.0;
 
@@ -26,11 +28,13 @@ public sealed partial class MainWindow : Window
         ExtendsContentIntoTitleBar = true;
 
         _scrollTimer = DispatcherQueue.CreateTimer();
-        _scrollTimer.Interval = TimeSpan.FromMilliseconds(16);
+        _scrollTimer.Interval = TimeSpan.FromMilliseconds(33);
         _scrollTimer.IsRepeating = true;
         _scrollTimer.Tick += ScrollTimer_Tick;
 
-        ConfigureEffectCards();
+        ConfigureBaselineCards();
+        UpdateSelectedEffect();
+        EffectSelector.SelectionChanged += EffectSelector_SelectionChanged;
         Activated += MainWindow_Activated;
     }
 
@@ -38,14 +42,9 @@ public sealed partial class MainWindow : Window
     {
         Activated -= MainWindow_Activated;
         await LoadWallpaperAndPopulateRowsAsync();
-
-        if (AutoScrollToggle.IsOn)
-        {
-            _scrollTimer.Start();
-        }
     }
 
-    private void ConfigureEffectCards()
+    private void ConfigureBaselineCards()
     {
         RawBackdropCard.Background = new BackdropEffectBrush(BackdropEffectKind.RawBackdrop);
 
@@ -56,14 +55,41 @@ public sealed partial class MainWindow : Window
             TintLuminosityOpacity = 0.08,
             FallbackColor = Colors.Transparent
         };
+    }
 
-        BlurCard.Background = new BackdropEffectBrush(BackdropEffectKind.GaussianBlur);
-        SaturationCard.Background = new BackdropEffectBrush(BackdropEffectKind.Saturation);
-        HueCard.Background = new BackdropEffectBrush(BackdropEffectKind.HueRotation);
-        InvertCard.Background = new BackdropEffectBrush(BackdropEffectKind.Invert);
-        SepiaCard.Background = new BackdropEffectBrush(BackdropEffectKind.Sepia);
-        ExposureCard.Background = new BackdropEffectBrush(BackdropEffectKind.Exposure);
-        GrayscaleCard.Background = new BackdropEffectBrush(BackdropEffectKind.Grayscale);
+    private void EffectSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        UpdateSelectedEffect();
+    }
+
+    private void UpdateSelectedEffect()
+    {
+        var kind = EffectSelector.SelectedIndex switch
+        {
+            0 => BackdropEffectKind.GaussianBlur,
+            1 => BackdropEffectKind.Saturation,
+            2 => BackdropEffectKind.HueRotation,
+            3 => BackdropEffectKind.Invert,
+            4 => BackdropEffectKind.Sepia,
+            5 => BackdropEffectKind.Exposure,
+            6 => BackdropEffectKind.Grayscale,
+            _ => BackdropEffectKind.GaussianBlur
+        };
+
+        SelectedEffectCard.Background = null;
+        SelectedEffectCard.Background = new BackdropEffectBrush(kind);
+
+        (SelectedEffectLabel.Title, SelectedEffectLabel.Subtitle) = kind switch
+        {
+            BackdropEffectKind.GaussianBlur => ("GaussianBlurEffect", "BlurAmount = 28"),
+            BackdropEffectKind.Saturation => ("SaturationEffect", "Saturation = 0"),
+            BackdropEffectKind.HueRotation => ("HueRotationEffect", "Angle = 1.8 rad"),
+            BackdropEffectKind.Invert => ("InvertEffect", "Direct color inversion"),
+            BackdropEffectKind.Sepia => ("SepiaEffect", "Intensity = 1"),
+            BackdropEffectKind.Exposure => ("ExposureEffect", "Exposure = +1.25"),
+            BackdropEffectKind.Grayscale => ("GrayscaleEffect", "Pointwise grayscale transform"),
+            _ => ("Effect", string.Empty)
+        };
     }
 
     private async Task LoadWallpaperAndPopulateRowsAsync()
@@ -98,45 +124,46 @@ public sealed partial class MainWindow : Window
     {
         BackdropSourcePanel.Children.Clear();
 
-        for (var index = 0; index < 24; index++)
+        ImageBrush? wallpaperTop = null;
+        ImageBrush? wallpaperBottom = null;
+
+        if (wallpaper is not null)
+        {
+            wallpaperTop = CreateWallpaperBrush(wallpaper, AlignmentY.Top);
+            wallpaperBottom = CreateWallpaperBrush(wallpaper, AlignmentY.Bottom);
+        }
+
+        for (var index = 0; index < BackdropRowCount; index++)
         {
             var row = new Border
             {
-                Height = 320,
-                CornerRadius = new CornerRadius(18),
+                Height = 280,
                 BorderBrush = new SolidColorBrush(Color.FromArgb(180, 255, 255, 255)),
                 BorderThickness = new Thickness(1),
                 Background = wallpaper is null
                     ? CreateFallbackBrush(index)
-                    : new ImageBrush
-                    {
-                        ImageSource = wallpaper,
-                        Stretch = Stretch.UniformToFill,
-                        AlignmentX = AlignmentX.Center,
-                        AlignmentY = index % 2 == 0 ? AlignmentY.Top : AlignmentY.Bottom
-                    }
+                    : index % 2 == 0 ? wallpaperTop : wallpaperBottom
             };
 
             var grid = new Grid
             {
-                Padding = new Thickness(28)
+                Padding = new Thickness(24)
             };
 
             var marker = new Border
             {
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
-                Padding = new Thickness(16, 10, 16, 10),
+                Padding = new Thickness(14, 8, 14, 8),
                 Background = new SolidColorBrush(index % 2 == 0
                     ? Color.FromArgb(220, 20, 20, 20)
-                    : Color.FromArgb(220, 240, 240, 240)),
-                CornerRadius = new CornerRadius(10)
+                    : Color.FromArgb(220, 240, 240, 240))
             };
 
             marker.Child = new TextBlock
             {
                 Text = $"MOVING BACKDROP {index:00}",
-                FontSize = 34,
+                FontSize = 30,
                 FontWeight = Microsoft.UI.Text.FontWeights.Bold,
                 Foreground = new SolidColorBrush(index % 2 == 0 ? Colors.White : Colors.Black)
             };
@@ -147,27 +174,43 @@ public sealed partial class MainWindow : Window
                 HorizontalAlignment = HorizontalAlignment.Right,
                 VerticalAlignment = VerticalAlignment.Bottom,
                 FontFamily = new FontFamily("Consolas"),
-                FontSize = 108,
+                FontSize = 96,
                 FontWeight = Microsoft.UI.Text.FontWeights.Bold,
                 Foreground = new SolidColorBrush(Color.FromArgb(225, 255, 255, 255))
             };
 
-            var controls = new StackPanel
+            var controlMarker = new Border
             {
-                Orientation = Orientation.Horizontal,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Bottom,
-                Spacing = 12
+                Padding = new Thickness(12, 7, 12, 7),
+                Background = new SolidColorBrush(Color.FromArgb(220, 16, 16, 16))
             };
-            controls.Children.Add(new Button { Content = $"Button {index:00}" });
-            controls.Children.Add(new ToggleSwitch { Header = "High-contrast moving XAML", IsOn = index % 2 == 0 });
+            controlMarker.Child = new TextBlock
+            {
+                Text = $"XAML marker {index:00}  ◼  ◻  ◼",
+                FontSize = 18,
+                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                Foreground = new SolidColorBrush(Colors.White)
+            };
 
             grid.Children.Add(marker);
             grid.Children.Add(number);
-            grid.Children.Add(controls);
+            grid.Children.Add(controlMarker);
             row.Child = grid;
             BackdropSourcePanel.Children.Add(row);
         }
+    }
+
+    private static ImageBrush CreateWallpaperBrush(BitmapImage wallpaper, AlignmentY alignmentY)
+    {
+        return new ImageBrush
+        {
+            ImageSource = wallpaper,
+            Stretch = Stretch.UniformToFill,
+            AlignmentX = AlignmentX.Center,
+            AlignmentY = alignmentY
+        };
     }
 
     private static Brush CreateFallbackBrush(int index)
@@ -237,11 +280,6 @@ public sealed partial class MainWindow : Window
     {
         _scrollDirection = 1.0;
         BackdropSourceScroller.ChangeView(null, 0, null, true);
-    }
-
-    private void BackdropSourceScroller_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
-    {
-        ScrollStateText.Text = $"Offset: {BackdropSourceScroller.VerticalOffset:F1} / {BackdropSourceScroller.ScrollableHeight:F1}";
     }
 
     private static string? FindCurrentWallpaperPath()
