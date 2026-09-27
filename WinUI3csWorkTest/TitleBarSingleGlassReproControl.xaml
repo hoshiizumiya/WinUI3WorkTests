@@ -28,7 +28,7 @@
             RefractionStrength="50" />
     </UserControl.Resources>
 
-    <Grid Background="#202020">
+    <Grid Background="Transparent">
         <ScrollViewer
             x:Name="RootScroller"
             Background="Transparent"

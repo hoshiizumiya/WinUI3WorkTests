@@ -9,12 +9,20 @@
     Title="Composition backdrop invalidation repro"
     mc:Ignorable="d">
 
-    <Grid Background="#111111">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+
+        <!-- Snap.Hutao uses an opaque XAML underlay only for BackdropType.None.
+             Mica/Acrylic make the XAML island transparent instead. -->
+        <Border
+            x:Name="OpaqueWindowUnderlay"
+            Grid.RowSpan="3"
+            Background="#111111"
+            IsHitTestVisible="False" />
 
         <TitleBar
             x:Name="WindowTitleBar"
@@ -76,7 +84,12 @@
             Grid.Row="1"
             Padding="12,8"
             Background="#EE202020"
-            ColumnSpacing="12">
+            ColumnSpacing="12"
+            RowSpacing="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="180" />
@@ -147,6 +160,41 @@
                 VerticalAlignment="Center"
                 Click="ResetMotion_Click"
                 Content="Reset" />
+
+            <StackPanel
+                Grid.Row="1"
+                Grid.ColumnSpan="6"
+                Orientation="Horizontal"
+                Spacing="16">
+                <StackPanel Spacing="2">
+                    <TextBlock
+                        FontSize="12"
+                        Text="Window SystemBackdrop" />
+                    <ComboBox
+                        x:Name="WindowBackdropSelector"
+                        Width="170"
+                        SelectedIndex="0">
+                        <ComboBoxItem Content="None" />
+                        <ComboBoxItem Content="Mica" />
+                        <ComboBoxItem Content="Mica Alt" />
+                        <ComboBoxItem Content="Desktop Acrylic" />
+                        <ComboBoxItem Content="Transparent SystemBackdrop" />
+                    </ComboBox>
+                </StackPanel>
+
+                <ToggleSwitch
+                    x:Name="OpaqueUnderlayToggle"
+                    VerticalAlignment="Bottom"
+                    Header="Opaque XAML underlay"
+                    IsOn="True" />
+
+                <TextBlock
+                    MaxWidth="760"
+                    VerticalAlignment="Bottom"
+                    Opacity="0.72"
+                    TextWrapping="Wrap"
+                    Text="Snap.Hutao: None = SystemBackdrop null + opaque root; Mica/Acrylic = non-null SystemBackdrop + transparent root. Turn the underlay off to reproduce that composition topology." />
+            </StackPanel>
         </Grid>
 
         <Grid Grid.Row="2">

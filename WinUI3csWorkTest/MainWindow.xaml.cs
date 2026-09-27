@@ -43,7 +43,12 @@ public sealed partial class MainWindow : Window
 
         ScenarioSelector.SelectionChanged += ScenarioSelector_SelectionChanged;
         EffectSelector.SelectionChanged += EffectSelector_SelectionChanged;
+        WindowBackdropSelector.SelectionChanged += WindowBackdropSelector_SelectionChanged;
+        OpaqueUnderlayToggle.Toggled += OpaqueUnderlayToggle_Toggled;
         Activated += MainWindow_Activated;
+
+        ApplyWindowBackdropMode();
+        ApplyOpaqueUnderlayMode();
     }
 
     private async void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
@@ -81,6 +86,46 @@ public sealed partial class MainWindow : Window
             TintLuminosityOpacity = 0.08,
             FallbackColor = Colors.Transparent
         };
+    }
+
+    private void WindowBackdropSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        ApplyWindowBackdropMode();
+
+        // Mirror Snap.Hutao's normal setting behavior by default:
+        // None paints an opaque XAML root, all SystemBackdrop modes expose transparency.
+        OpaqueUnderlayToggle.IsOn = WindowBackdropSelector.SelectedIndex == 0;
+        ApplyOpaqueUnderlayMode();
+    }
+
+    private void OpaqueUnderlayToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        ApplyOpaqueUnderlayMode();
+    }
+
+    private void ApplyWindowBackdropMode()
+    {
+        Microsoft.UI.Xaml.Media.SystemBackdrop? backdrop = WindowBackdropSelector.SelectedIndex switch
+        {
+            1 => new MicaBackdrop
+            {
+                Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.Base
+            },
+            2 => new MicaBackdrop
+            {
+                Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt
+            },
+            3 => new DesktopAcrylicBackdrop(),
+            4 => new TransparentTestBackdrop(),
+            _ => null
+        };
+
+        SystemBackdrop = backdrop;
+    }
+
+    private void ApplyOpaqueUnderlayMode()
+    {
+        OpaqueWindowUnderlay.Opacity = OpaqueUnderlayToggle.IsOn ? 1.0 : 0.0;
     }
 
     private void ScenarioSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)

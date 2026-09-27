@@ -47,7 +47,7 @@
             RefractionStrength="50" />
     </UserControl.Resources>
 
-    <Grid Background="#202020">
+    <Grid Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="44" />
             <RowDefinition Height="*" />
