@@ -6,7 +6,6 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +17,7 @@ namespace WinUI3csWorkTest;
 public sealed partial class MainWindow : Window
 {
     private const uint SpiGetDesktopWallpaper = 0x0073;
-    private readonly DispatcherTimer _scrollTimer;
+    private readonly DispatcherQueueTimer _scrollTimer;
     private double _scrollDirection = 1.0;
 
     public MainWindow()
@@ -193,7 +192,7 @@ public sealed partial class MainWindow : Window
         return brush;
     }
 
-    private void ScrollTimer_Tick(DispatcherQueueTimer sender, object args)
+    private void ScrollTimer_Tick(object? sender, object args)
     {
         var maximum = BackdropSourceScroller.ScrollableHeight;
         if (maximum <= 0)
@@ -272,9 +271,20 @@ public sealed partial class MainWindow : Window
         var cachedFiles = Path.Combine(themesDirectory, "CachedFiles");
         if (Directory.Exists(cachedFiles))
         {
-            return Directory.EnumerateFiles(cachedFiles)
-                .OrderByDescending(File.GetLastWriteTimeUtc)
-                .FirstOrDefault();
+            string? newest = null;
+            DateTime newestWriteTime = DateTime.MinValue;
+
+            foreach (var path in Directory.EnumerateFiles(cachedFiles))
+            {
+                var writeTime = File.GetLastWriteTimeUtc(path);
+                if (writeTime > newestWriteTime)
+                {
+                    newest = path;
+                    newestWriteTime = writeTime;
+                }
+            }
+
+            return newest;
         }
 
         return null;
