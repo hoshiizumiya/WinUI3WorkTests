@@ -107,8 +107,7 @@
                     Grid.Column="0"
                     Margin="8"
                     BorderBrush="#E8FFFFFF"
-                    BorderThickness="1"
-                    CornerRadius="16">
+                    BorderThickness="1">
                     <local:EffectCardLabel Title="Raw CompositionBackdropBrush" Subtitle="No effect factory" />
                 </Border>
 
@@ -118,8 +117,7 @@
                     Grid.Column="1"
                     Margin="8"
                     BorderBrush="#E8FFFFFF"
-                    BorderThickness="1"
-                    CornerRadius="16">
+                    BorderThickness="1">
                     <local:EffectCardLabel Title="WinUI AcrylicBrush" Subtitle="Built-in baseline" />
                 </Border>
 
@@ -129,8 +127,7 @@
                     Grid.Column="2"
                     Margin="8"
                     BorderBrush="#E8FFFFFF"
-                    BorderThickness="1"
-                    CornerRadius="16">
+                    BorderThickness="1">
                     <local:EffectCardLabel Title="GaussianBlurEffect" Subtitle="BlurAmount = 28" />
                 </Border>
 
@@ -140,8 +137,7 @@
                     Grid.Column="0"
                     Margin="8"
                     BorderBrush="#E8FFFFFF"
-                    BorderThickness="1"
-                    CornerRadius="16">
+                    BorderThickness="1">
                     <local:EffectCardLabel Title="SaturationEffect" Subtitle="Saturation = 0" />
                 </Border>
 
@@ -151,8 +147,7 @@
                     Grid.Column="1"
                     Margin="8"
                     BorderBrush="#E8FFFFFF"
-                    BorderThickness="1"
-                    CornerRadius="16">
+                    BorderThickness="1">
                     <local:EffectCardLabel Title="HueRotationEffect" Subtitle="Angle = 1.8 rad" />
                 </Border>
 
@@ -162,8 +157,7 @@
                     Grid.Column="2"
                     Margin="8"
                     BorderBrush="#E8FFFFFF"
-                    BorderThickness="1"
-                    CornerRadius="16">
+                    BorderThickness="1">
                     <local:EffectCardLabel Title="InvertEffect" Subtitle="Direct color inversion" />
                 </Border>
 
@@ -173,8 +167,7 @@
                     Grid.Column="0"
                     Margin="8"
                     BorderBrush="#E8FFFFFF"
-                    BorderThickness="1"
-                    CornerRadius="16">
+                    BorderThickness="1">
                     <local:EffectCardLabel Title="SepiaEffect" Subtitle="Intensity = 1" />
                 </Border>
 
@@ -184,8 +177,7 @@
                     Grid.Column="1"
                     Margin="8"
                     BorderBrush="#E8FFFFFF"
-                    BorderThickness="1"
-                    CornerRadius="16">
+                    BorderThickness="1">
                     <local:EffectCardLabel Title="ExposureEffect" Subtitle="Exposure = +1.25" />
                 </Border>
 
@@ -195,8 +187,7 @@
                     Grid.Column="2"
                     Margin="8"
                     BorderBrush="#E8FFFFFF"
-                    BorderThickness="1"
-                    CornerRadius="16">
+                    BorderThickness="1">
                     <local:EffectCardLabel Title="GrayscaleEffect" Subtitle="Pointwise grayscale transform" />
                 </Border>
             </Grid>
