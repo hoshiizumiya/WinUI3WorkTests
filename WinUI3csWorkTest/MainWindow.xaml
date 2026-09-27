@@ -24,12 +24,13 @@
             Grid.Row="1"
             Padding="12,8"
             Background="#EE202020"
-            ColumnSpacing="16">
+            ColumnSpacing="12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="220" />
+                <ColumnDefinition Width="180" />
+                <ColumnDefinition Width="210" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="180" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
@@ -37,7 +38,7 @@
                 <TextBlock
                     FontSize="14"
                     FontWeight="SemiBold"
-                    Text="Scroll the wallpaper-backed XAML content under the fixed effect cards." />
+                    Text="Compare backdrop invalidation when the source moves vs. when the effect visual moves." />
                 <TextBlock
                     x:Name="WallpaperStatusText"
                     FontSize="12"
@@ -46,10 +47,16 @@
             </StackPanel>
 
             <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                <TextBlock FontSize="12" Text="Scenario" />
+                <ComboBox x:Name="ScenarioSelector" SelectedIndex="0">
+                    <ComboBoxItem Content="Move backdrop content" />
+                    <ComboBoxItem Content="Move effect visuals" />
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="2">
                 <TextBlock FontSize="12" Text="Native effect under test" />
-                <ComboBox
-                    x:Name="EffectSelector"
-                    SelectedIndex="0">
+                <ComboBox x:Name="EffectSelector" SelectedIndex="0">
                     <ComboBoxItem Content="GaussianBlurEffect" />
                     <ComboBoxItem Content="SaturationEffect" />
                     <ComboBoxItem Content="HueRotationEffect" />
@@ -61,20 +68,17 @@
             </StackPanel>
 
             <ToggleSwitch
-                x:Name="AutoScrollToggle"
-                Grid.Column="2"
-                VerticalAlignment="Center"
-                Header="Auto scroll"
-                IsOn="False"
-                Toggled="AutoScrollToggle_Toggled" />
-
-            <StackPanel
+                x:Name="AutoMotionToggle"
                 Grid.Column="3"
                 VerticalAlignment="Center"
-                Spacing="2">
-                <TextBlock FontSize="12" Text="Scroll speed (DIP/tick)" />
+                Header="Auto motion"
+                IsOn="False"
+                Toggled="AutoMotionToggle_Toggled" />
+
+            <StackPanel Grid.Column="4" VerticalAlignment="Center" Spacing="2">
+                <TextBlock FontSize="12" Text="Motion speed" />
                 <Slider
-                    x:Name="ScrollSpeedSlider"
+                    x:Name="MotionSpeedSlider"
                     Maximum="64"
                     Minimum="4"
                     StepFrequency="4"
@@ -82,68 +86,168 @@
             </StackPanel>
 
             <Button
-                Grid.Column="4"
+                Grid.Column="5"
                 VerticalAlignment="Center"
-                Click="ResetScroll_Click"
+                Click="ResetMotion_Click"
                 Content="Reset" />
         </Grid>
 
         <Grid Grid.Row="2">
-            <ScrollViewer
-                x:Name="BackdropSourceScroller"
-                HorizontalScrollBarVisibility="Disabled"
-                VerticalScrollBarVisibility="Visible">
-                <StackPanel
-                    x:Name="BackdropSourcePanel"
-                    Padding="24"
-                    Spacing="18" />
-            </ScrollViewer>
+            <!-- Scenario 1: the backdrop content moves while effect visuals remain fixed. -->
+            <Grid x:Name="ScrollingBackdropTestRoot">
+                <ScrollViewer
+                    x:Name="BackdropSourceScroller"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Visible">
+                    <StackPanel
+                        x:Name="BackdropSourcePanel"
+                        Padding="24"
+                        Spacing="18" />
+                </ScrollViewer>
 
+                <Grid
+                    Width="1020"
+                    Height="220"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    IsHitTestVisible="False">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Border
+                        x:Name="RawBackdropCard"
+                        Grid.Column="0"
+                        Margin="8"
+                        BorderBrush="#E8FFFFFF"
+                        BorderThickness="1">
+                        <local:EffectCardLabel
+                            Title="Raw CompositionBackdropBrush"
+                            Subtitle="Fixed visual; moving backdrop" />
+                    </Border>
+
+                    <Border
+                        x:Name="AcrylicCard"
+                        Grid.Column="1"
+                        Margin="8"
+                        BorderBrush="#E8FFFFFF"
+                        BorderThickness="1">
+                        <local:EffectCardLabel
+                            Title="WinUI AcrylicBrush"
+                            Subtitle="Fixed visual; moving backdrop" />
+                    </Border>
+
+                    <Border
+                        x:Name="SelectedEffectCard"
+                        Grid.Column="2"
+                        Margin="8"
+                        BorderBrush="#E8FFFFFF"
+                        BorderThickness="1">
+                        <local:EffectCardLabel
+                            x:Name="SelectedEffectLabel"
+                            Title="GaussianBlurEffect"
+                            Subtitle="Fixed visual; moving backdrop" />
+                    </Border>
+                </Grid>
+            </Grid>
+
+            <!-- Scenario 2: the backdrop is static and the effect-bearing XAML visuals move. -->
             <Grid
-                Width="1020"
-                Height="220"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                IsHitTestVisible="False">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+                x:Name="MovingEffectTestRoot"
+                Visibility="Collapsed">
+                <Border x:Name="StaticWallpaperBackground" />
 
-                <Border
-                    x:Name="RawBackdropCard"
-                    Grid.Column="0"
-                    Margin="8"
-                    BorderBrush="#E8FFFFFF"
-                    BorderThickness="1">
-                    <local:EffectCardLabel
-                        Title="Raw CompositionBackdropBrush"
-                        Subtitle="No effect factory" />
-                </Border>
+                <Grid IsHitTestVisible="False">
+                    <Border
+                        Width="90"
+                        Margin="90,0,0,0"
+                        HorizontalAlignment="Left"
+                        Background="#CCFFFFFF" />
+                    <Border
+                        Width="90"
+                        Margin="290,0,0,0"
+                        HorizontalAlignment="Left"
+                        Background="#CC101010" />
+                    <Border
+                        Width="90"
+                        Margin="490,0,0,0"
+                        HorizontalAlignment="Left"
+                        Background="#CCFFFFFF" />
+                    <Border
+                        Width="90"
+                        Margin="690,0,0,0"
+                        HorizontalAlignment="Left"
+                        Background="#CC101010" />
 
-                <Border
-                    x:Name="AcrylicCard"
-                    Grid.Column="1"
-                    Margin="8"
-                    BorderBrush="#E8FFFFFF"
-                    BorderThickness="1">
-                    <local:EffectCardLabel
-                        Title="WinUI AcrylicBrush"
-                        Subtitle="Built-in baseline" />
-                </Border>
+                    <TextBlock
+                        Margin="40,36,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        FontFamily="Consolas"
+                        FontSize="38"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="STATIC BACKDROP  A  B  C  D" />
+                    <TextBlock
+                        Margin="40,0,0,38"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom"
+                        FontFamily="Consolas"
+                        FontSize="32"
+                        FontWeight="Bold"
+                        Foreground="Black"
+                        Text="0123456789  /  STATIC XAML MARKERS  /  9876543210" />
+                </Grid>
 
-                <Border
-                    x:Name="SelectedEffectCard"
-                    Grid.Column="2"
-                    Margin="8"
-                    BorderBrush="#E8FFFFFF"
-                    BorderThickness="1">
-                    <local:EffectCardLabel
-                        x:Name="SelectedEffectLabel"
-                        Title="GaussianBlurEffect"
-                        Subtitle="BlurAmount = 28" />
-                </Border>
+                <Grid
+                    x:Name="MovingEffectHost"
+                    Width="320"
+                    Height="540"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    IsHitTestVisible="False">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Border
+                        x:Name="MovingRawBackdropCard"
+                        Grid.Row="0"
+                        Margin="8"
+                        BorderBrush="#E8FFFFFF"
+                        BorderThickness="1">
+                        <local:EffectCardLabel
+                            Title="Raw CompositionBackdropBrush"
+                            Subtitle="Moving visual; static backdrop" />
+                    </Border>
+
+                    <Border
+                        x:Name="MovingAcrylicCard"
+                        Grid.Row="1"
+                        Margin="8"
+                        BorderBrush="#E8FFFFFF"
+                        BorderThickness="1">
+                        <local:EffectCardLabel
+                            Title="WinUI AcrylicBrush"
+                            Subtitle="Moving visual; static backdrop" />
+                    </Border>
+
+                    <Border
+                        x:Name="MovingSelectedEffectCard"
+                        Grid.Row="2"
+                        Margin="8"
+                        BorderBrush="#E8FFFFFF"
+                        BorderThickness="1">
+                        <local:EffectCardLabel
+                            x:Name="MovingSelectedEffectLabel"
+                            Title="GaussianBlurEffect"
+                            Subtitle="Moving visual; static backdrop" />
+                    </Border>
+                </Grid>
             </Grid>
         </Grid>
     </Grid>

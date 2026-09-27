@@ -1,11 +1,14 @@
 using Microsoft.UI;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.IO;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +23,7 @@ public sealed partial class MainWindow : Window
     private const int BackdropRowCount = 12;
 
     private readonly DispatcherQueueTimer _scrollTimer;
+    private ScalarKeyFrameAnimation? _movingEffectAnimation;
     private double _scrollDirection = 1.0;
 
     public MainWindow()
@@ -34,6 +38,8 @@ public sealed partial class MainWindow : Window
 
         ConfigureBaselineCards();
         UpdateSelectedEffect();
+
+        ScenarioSelector.SelectionChanged += ScenarioSelector_SelectionChanged;
         EffectSelector.SelectionChanged += EffectSelector_SelectionChanged;
         Activated += MainWindow_Activated;
     }
@@ -44,11 +50,20 @@ public sealed partial class MainWindow : Window
         await LoadWallpaperAndPopulateRowsAsync();
     }
 
+    private bool IsMovingEffectScenario => ScenarioSelector.SelectedIndex == 1;
+
     private void ConfigureBaselineCards()
     {
         RawBackdropCard.Background = new BackdropEffectBrush(BackdropEffectKind.RawBackdrop);
+        MovingRawBackdropCard.Background = new BackdropEffectBrush(BackdropEffectKind.RawBackdrop);
 
-        AcrylicCard.Background = new AcrylicBrush
+        AcrylicCard.Background = CreateAcrylicBrush();
+        MovingAcrylicCard.Background = CreateAcrylicBrush();
+    }
+
+    private static AcrylicBrush CreateAcrylicBrush()
+    {
+        return new AcrylicBrush
         {
             TintColor = Colors.Gray,
             TintOpacity = 0.10,
@@ -57,14 +72,28 @@ public sealed partial class MainWindow : Window
         };
     }
 
+    private void ScenarioSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        StopMotion();
+
+        var movingEffects = IsMovingEffectScenario;
+        ScrollingBackdropTestRoot.Visibility = movingEffects ? Visibility.Collapsed : Visibility.Visible;
+        MovingEffectTestRoot.Visibility = movingEffects ? Visibility.Visible : Visibility.Collapsed;
+
+        if (AutoMotionToggle.IsOn)
+        {
+            StartMotion();
+        }
+    }
+
     private void EffectSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         UpdateSelectedEffect();
     }
 
-    private void UpdateSelectedEffect()
+    private BackdropEffectKind GetSelectedEffectKind()
     {
-        var kind = EffectSelector.SelectedIndex switch
+        return EffectSelector.SelectedIndex switch
         {
             0 => BackdropEffectKind.GaussianBlur,
             1 => BackdropEffectKind.Saturation,
@@ -75,11 +104,19 @@ public sealed partial class MainWindow : Window
             6 => BackdropEffectKind.Grayscale,
             _ => BackdropEffectKind.GaussianBlur
         };
+    }
+
+    private void UpdateSelectedEffect()
+    {
+        var kind = GetSelectedEffectKind();
 
         SelectedEffectCard.Background = null;
-        SelectedEffectCard.Background = new BackdropEffectBrush(kind);
+        MovingSelectedEffectCard.Background = null;
 
-        (SelectedEffectLabel.Title, SelectedEffectLabel.Subtitle) = kind switch
+        SelectedEffectCard.Background = new BackdropEffectBrush(kind);
+        MovingSelectedEffectCard.Background = new BackdropEffectBrush(kind);
+
+        var (title, detail) = kind switch
         {
             BackdropEffectKind.GaussianBlur => ("GaussianBlurEffect", "BlurAmount = 28"),
             BackdropEffectKind.Saturation => ("SaturationEffect", "Saturation = 0"),
@@ -90,6 +127,11 @@ public sealed partial class MainWindow : Window
             BackdropEffectKind.Grayscale => ("GrayscaleEffect", "Pointwise grayscale transform"),
             _ => ("Effect", string.Empty)
         };
+
+        SelectedEffectLabel.Title = title;
+        SelectedEffectLabel.Subtitle = $"Fixed visual; moving backdrop. {detail}";
+        MovingSelectedEffectLabel.Title = title;
+        MovingSelectedEffectLabel.Subtitle = $"Moving visual; static backdrop. {detail}";
     }
 
     private async Task LoadWallpaperAndPopulateRowsAsync()
@@ -118,6 +160,9 @@ public sealed partial class MainWindow : Window
         }
 
         PopulateBackdropRows(wallpaper);
+        StaticWallpaperBackground.Background = wallpaper is null
+            ? CreateFallbackBrush(0)
+            : CreateWallpaperBrush(wallpaper, AlignmentY.Center);
     }
 
     private void PopulateBackdropRows(BitmapImage? wallpaper)
@@ -235,6 +280,65 @@ public sealed partial class MainWindow : Window
         return brush;
     }
 
+    private void AutoMotionToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_scrollTimer is null)
+        {
+            return;
+        }
+
+        if (AutoMotionToggle.IsOn)
+        {
+            StartMotion();
+        }
+        else
+        {
+            StopMotion();
+        }
+    }
+
+    private void StartMotion()
+    {
+        if (IsMovingEffectScenario)
+        {
+            StartMovingEffectAnimation();
+        }
+        else
+        {
+            _scrollTimer.Start();
+        }
+    }
+
+    private void StopMotion()
+    {
+        _scrollTimer.Stop();
+
+        var visual = ElementCompositionPreview.GetElementVisual(MovingEffectHost);
+        visual.StopAnimation("Offset.X");
+        _movingEffectAnimation = null;
+    }
+
+    private void StartMovingEffectAnimation()
+    {
+        var visual = ElementCompositionPreview.GetElementVisual(MovingEffectHost);
+        var compositor = visual.Compositor;
+
+        visual.StopAnimation("Offset.X");
+
+        var availableWidth = Math.Max(0.0, MovingEffectTestRoot.ActualWidth - MovingEffectHost.ActualWidth);
+        var start = 20.0f;
+        var end = (float)Math.Max(start, availableWidth - 20.0);
+
+        _movingEffectAnimation = compositor.CreateScalarKeyFrameAnimation();
+        _movingEffectAnimation.InsertKeyFrame(0.0f, start);
+        _movingEffectAnimation.InsertKeyFrame(1.0f, end);
+        _movingEffectAnimation.Duration = TimeSpan.FromSeconds(Math.Clamp(180.0 / MotionSpeedSlider.Value, 1.5, 8.0));
+        _movingEffectAnimation.IterationBehavior = AnimationIterationBehavior.Forever;
+        _movingEffectAnimation.Direction = AnimationDirection.Alternate;
+
+        visual.StartAnimation("Offset.X", _movingEffectAnimation);
+    }
+
     private void ScrollTimer_Tick(object? sender, object args)
     {
         var maximum = BackdropSourceScroller.ScrollableHeight;
@@ -243,7 +347,7 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        var next = BackdropSourceScroller.VerticalOffset + ScrollSpeedSlider.Value * _scrollDirection;
+        var next = BackdropSourceScroller.VerticalOffset + MotionSpeedSlider.Value * _scrollDirection;
 
         if (next >= maximum)
         {
@@ -259,27 +363,21 @@ public sealed partial class MainWindow : Window
         BackdropSourceScroller.ChangeView(null, next, null, true);
     }
 
-    private void AutoScrollToggle_Toggled(object sender, RoutedEventArgs e)
+    private void ResetMotion_Click(object sender, RoutedEventArgs e)
     {
-        if (_scrollTimer is null)
-        {
-            return;
-        }
+        var restart = AutoMotionToggle.IsOn;
+        StopMotion();
 
-        if (AutoScrollToggle.IsOn)
-        {
-            _scrollTimer.Start();
-        }
-        else
-        {
-            _scrollTimer.Stop();
-        }
-    }
-
-    private void ResetScroll_Click(object sender, RoutedEventArgs e)
-    {
         _scrollDirection = 1.0;
         BackdropSourceScroller.ChangeView(null, 0, null, true);
+
+        var visual = ElementCompositionPreview.GetElementVisual(MovingEffectHost);
+        visual.Offset = new Vector3(20.0f, visual.Offset.Y, visual.Offset.Z);
+
+        if (restart)
+        {
+            StartMotion();
+        }
     }
 
     private static string? FindCurrentWallpaperPath()
