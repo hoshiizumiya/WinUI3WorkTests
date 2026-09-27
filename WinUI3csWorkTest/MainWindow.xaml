@@ -121,6 +121,7 @@
                     <ComboBoxItem Content="Hutao hierarchy / shared LiquidGlass" />
                     <ComboBoxItem Content="Real TitleBar + single scrolled LiquidGlass" />
                     <ComboBoxItem Content="Pivot + CardShadow + reposition transition" />
+                    <ComboBoxItem Content="SystemBackdrop + native backdrop effects" />
                 </ComboBox>
             </StackPanel>
 
@@ -676,6 +677,10 @@
 
             <local:LaunchGameShadowReproControl
                 x:Name="LaunchGameShadowRepro"
+                Visibility="Collapsed" />
+
+            <local:NativeBackdropSystemBackdropReproControl
+                x:Name="NativeBackdropSystemBackdropRepro"
                 Visibility="Collapsed" />
         </Grid>
     </Grid>

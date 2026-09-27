@@ -63,6 +63,7 @@ public sealed partial class MainWindow : Window
     private bool IsHutaoHierarchyScenario => ScenarioSelector.SelectedIndex == 4;
     private bool IsTitleBarSingleGlassScenario => ScenarioSelector.SelectedIndex == 5;
     private bool IsLaunchGameShadowScenario => ScenarioSelector.SelectedIndex == 6;
+    private bool IsNativeBackdropSystemBackdropScenario => ScenarioSelector.SelectedIndex == 7;
 
     private void ConfigureBaselineCards()
     {
@@ -138,9 +139,10 @@ public sealed partial class MainWindow : Window
         var hutaoHierarchy = IsHutaoHierarchyScenario;
         var titleBarSingleGlass = IsTitleBarSingleGlassScenario;
         var launchGameShadow = IsLaunchGameShadowScenario;
+        var nativeBackdropSystemBackdrop = IsNativeBackdropSystemBackdropScenario;
 
         ScrollingBackdropTestRoot.Visibility =
-            !movingEffects && !movingEffectsOverControls && !scrollContainedEffect && !hutaoHierarchy && !titleBarSingleGlass && !launchGameShadow ? Visibility.Visible : Visibility.Collapsed;
+            !movingEffects && !movingEffectsOverControls && !scrollContainedEffect && !hutaoHierarchy && !titleBarSingleGlass && !launchGameShadow && !nativeBackdropSystemBackdrop ? Visibility.Visible : Visibility.Collapsed;
         MovingEffectTestRoot.Visibility =
             movingEffects ? Visibility.Visible : Visibility.Collapsed;
         MovingEffectOverControlsTestRoot.Visibility =
@@ -153,6 +155,8 @@ public sealed partial class MainWindow : Window
             titleBarSingleGlass ? Visibility.Visible : Visibility.Collapsed;
         LaunchGameShadowRepro.Visibility =
             launchGameShadow ? Visibility.Visible : Visibility.Collapsed;
+        NativeBackdropSystemBackdropRepro.Visibility =
+            nativeBackdropSystemBackdrop ? Visibility.Visible : Visibility.Collapsed;
 
         if (AutoMotionToggle.IsOn)
         {
@@ -437,8 +441,10 @@ public sealed partial class MainWindow : Window
 
     private void ScrollTimer_Tick(object? sender, object args)
     {
-        var scroller = IsLaunchGameShadowScenario
-            ? LaunchGameShadowRepro.Scroller
+        var scroller = IsNativeBackdropSystemBackdropScenario
+            ? NativeBackdropSystemBackdropRepro.Scroller
+            : IsLaunchGameShadowScenario
+                ? LaunchGameShadowRepro.Scroller
             : IsTitleBarSingleGlassScenario
                 ? TitleBarSingleGlassRepro.Scroller
                 : IsHutaoHierarchyScenario
@@ -480,6 +486,7 @@ public sealed partial class MainWindow : Window
         HutaoHierarchyRepro.Scroller.ChangeView(null, 0, null, true);
         TitleBarSingleGlassRepro.Scroller.ChangeView(null, 0, null, true);
         LaunchGameShadowRepro.Scroller.ChangeView(null, 0, null, true);
+        NativeBackdropSystemBackdropRepro.Scroller.ChangeView(null, 0, null, true);
 
         var movingVisual = ElementCompositionPreview.GetElementVisual(MovingEffectHost);
         movingVisual.Offset = new Vector3(20.0f, movingVisual.Offset.Y, movingVisual.Offset.Z);

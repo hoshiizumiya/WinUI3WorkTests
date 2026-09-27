@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="WinUI3csWorkTest.NativeBackdropSystemBackdropReproControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    UseLayoutRounding="False">
+
+    <Grid Background="Transparent">
+        <Pivot>
+            <Pivot.RightHeader>
+                <CommandBar DefaultLabelPosition="Right">
+                    <CommandBar.Content>
+                        <TextBlock
+                            Margin="12,14,12,0"
+                            VerticalAlignment="Center"
+                            FontSize="18"
+                            Text="NATIVE EFFECT HEADER" />
+                    </CommandBar.Content>
+                    <AppBarButton Icon="Folder" Label="Open Folder" />
+                    <AppBarButton Icon="Refresh" Label="Refresh" />
+                    <AppBarButton Icon="Play" Label="Launch" />
+                </CommandBar>
+            </Pivot.RightHeader>
+
+            <PivotItem Header="Native effects">
+                <ScrollViewer
+                    x:Name="RootScroller"
+                    Background="Transparent"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Visible">
+                    <StackPanel
+                        Margin="16"
+                        Spacing="16">
+                        <StackPanel.ChildrenTransitions>
+                            <EntranceThemeTransition FromVerticalOffset="50" />
+                            <RepositionThemeTransition IsStaggeringEnabled="False" />
+                        </StackPanel.ChildrenTransitions>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Button
+                                HorizontalAlignment="Left"
+                                Click="ToggleReposition_Click"
+                                Content="Toggle 72-DIP spacer above effect cards" />
+
+                            <Border
+                                x:Name="RepositionSpacer"
+                                Grid.Row="1"
+                                Height="72"
+                                Margin="0,8,0,0"
+                                Background="#4060A0FF" />
+                        </Grid>
+
+                        <TextBlock
+                            FontSize="16"
+                            TextWrapping="Wrap"
+                            Text="No LiquidGlass/custom HLSL is used below. Each card uses CompositionBackdropBrush directly or through an effect supported by Compositor.CreateEffectFactory." />
+
+                        <Grid
+                            x:Name="RawBackdropCard"
+                            Height="150"
+                            Padding="14"
+                            BorderBrush="#40FFFFFF"
+                            BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock
+                                    FontSize="22"
+                                    FontWeight="SemiBold"
+                                    Text="Raw CompositionBackdropBrush" />
+                                <TextBlock
+                                    Opacity="0.75"
+                                    Text="No CompositionEffectFactory." />
+                                <Button
+                                    Margin="0,18,0,0"
+                                    HorizontalAlignment="Left"
+                                    Content="Real XAML control in card" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid
+                            x:Name="GaussianBlurCard"
+                            Height="170"
+                            Padding="14"
+                            BorderBrush="#40FFFFFF"
+                            BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock
+                                    FontSize="22"
+                                    FontWeight="SemiBold"
+                                    Text="GaussianBlurEffect" />
+                                <TextBlock
+                                    Opacity="0.75"
+                                    Text="Composition-supported Win2D effect; BlurAmount = 28." />
+                                <ToggleSwitch
+                                    Margin="0,18,0,0"
+                                    Header="Real XAML control in blurred card"
+                                    IsOn="True" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid
+                            x:Name="InvertCard"
+                            Height="170"
+                            Padding="14"
+                            BorderBrush="#40FFFFFF"
+                            BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock
+                                    FontSize="22"
+                                    FontWeight="SemiBold"
+                                    Text="InvertEffect" />
+                                <TextBlock
+                                    Opacity="0.75"
+                                    Text="Pointwise Composition-supported effect." />
+                                <Button
+                                    Margin="0,18,0,0"
+                                    HorizontalAlignment="Left"
+                                    Content="Invert card button" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid
+                            x:Name="SaturationCard"
+                            Height="170"
+                            Padding="14"
+                            BorderBrush="#40FFFFFF"
+                            BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock
+                                    FontSize="22"
+                                    FontWeight="SemiBold"
+                                    Text="SaturationEffect" />
+                                <TextBlock
+                                    Opacity="0.75"
+                                    Text="Pointwise Composition-supported effect; Saturation = 0." />
+                                <CheckBox
+                                    Margin="0,18,0,0"
+                                    Content="Saturation card check box"
+                                    IsChecked="True" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid
+                            x:Name="HueCard"
+                            Height="170"
+                            Padding="14"
+                            BorderBrush="#40FFFFFF"
+                            BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock
+                                    FontSize="22"
+                                    FontWeight="SemiBold"
+                                    Text="HueRotationEffect" />
+                                <TextBlock
+                                    Opacity="0.75"
+                                    Text="Composition-supported effect; Angle = 1.8 rad." />
+                                <Slider
+                                    Margin="0,18,0,0"
+                                    Header="Hue card slider"
+                                    Minimum="0"
+                                    Maximum="100"
+                                    Value="60" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Border Height="700" Background="Transparent">
+                            <StackPanel Margin="8" Spacing="12">
+                                <TextBlock
+                                    FontFamily="Consolas"
+                                    FontSize="26"
+                                    Text="KEEP SCROLLING / force large vertical offsets" />
+                                <Button Content="Bottom Button" />
+                                <ToggleSwitch Header="Bottom Toggle" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </PivotItem>
+
+            <PivotItem Header="Other tab">
+                <Grid />
+            </PivotItem>
+        </Pivot>
+    </Grid>
+</UserControl>
