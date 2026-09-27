@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="WinUI3csWorkTest.HutaoHierarchyReproControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:hlsl="using:WinUI.Composition.Hlsl"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008">
+
+    <UserControl.Resources>
+        <!-- These are intentionally shared resource instances, matching HutaoCardBrush/HutaoSurfaceBrush. -->
+        <hlsl:LiquidGlassBrush
+            x:Key="SharedHutaoCardBrush"
+            BlurRadius="0"
+            BorderThickness="0"
+            CornerRadius="4"
+            DispersionStrength="1.2"
+            FallbackColor="#D92C2C2C"
+            GlassThickness="10"
+            InnerShadowStrength="0.1"
+            MagnificationStrength="45"
+            MaterialOpacity="1"
+            RefractiveIndex="3"
+            Saturation="1"
+            SpecularSaturation="1"
+            HighlightStrength="1.6"
+            IsEnabled="True"
+            RefractionStrength="50" />
+
+        <hlsl:LiquidGlassBrush
+            x:Key="SharedHutaoSurfaceBrush"
+            BlurRadius="0"
+            BorderThickness="0"
+            CornerRadius="4"
+            DispersionStrength="0.8"
+            FallbackColor="#CC2C2C2C"
+            GlassThickness="10"
+            InnerShadowStrength="0.1"
+            MagnificationStrength="45"
+            MaterialOpacity="1"
+            RefractiveIndex="3"
+            Saturation="1"
+            SpecularSaturation="1"
+            HighlightStrength="1.6"
+            IsEnabled="True"
+            RefractionStrength="50" />
+    </UserControl.Resources>
+
+    <Grid Background="#202020">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="44" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- MainView.TitleBar analogue: fixed and outside the Frame/page ScrollViewer. -->
+        <Grid
+            Grid.Row="0"
+            Padding="8,4"
+            Background="#F02A2A2A">
+            <StackPanel
+                HorizontalAlignment="Right"
+                Orientation="Horizontal"
+                Spacing="8">
+                <Button Content="[Dev] Invert Theme" />
+                <DropDownButton Content="Background task">
+                    <DropDownButton.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Text="Metadata initialization" />
+                            <MenuFlyoutItem Text="Full trust initialization" />
+                        </MenuFlyout>
+                    </DropDownButton.Flyout>
+                </DropDownButton>
+            </StackPanel>
+        </Grid>
+
+        <!-- MainView.NavigationView analogue. The Frame hosts the scrolling page. -->
+        <NavigationView
+            Grid.Row="1"
+            CompactPaneLength="45"
+            IsBackButtonVisible="Collapsed"
+            IsPaneOpen="False"
+            IsPaneToggleButtonVisible="False"
+            OpenPaneLength="205"
+            PaneDisplayMode="LeftCompact"
+            UseLayoutRounding="False">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="Announcement" Icon="Home" />
+            </NavigationView.MenuItems>
+
+            <Frame>
+                <Grid>
+                    <ScrollViewer
+                        x:Name="OuterScroller"
+                        Padding="0"
+                        Background="Transparent"
+                        HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Visible">
+                        <StackPanel
+                            Padding="16"
+                            Spacing="16">
+                            <StackPanel.ChildrenTransitions>
+                                <EntranceThemeTransition FromVerticalOffset="50" />
+                                <RepositionThemeTransition IsStaggeringEnabled="False" />
+                            </StackPanel.ChildrenTransitions>
+
+                            <!-- First AcrylicGridCardStyle analogue. -->
+                            <Grid
+                                Height="72"
+                                Padding="12"
+                                Background="{ThemeResource SharedHutaoCardBrush}"
+                                BorderBrush="#40FFFFFF"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <CommandBar DefaultLabelPosition="Right">
+                                    <CommandBar.Content>
+                                        <TextBlock
+                                            Margin="12,12,0,0"
+                                            FontSize="20"
+                                            Text="Greeting / first shared card consumer" />
+                                    </CommandBar.Content>
+                                    <AppBarButton Icon="Refresh" Label="Refresh" />
+                                </CommandBar>
+                            </Grid>
+
+                            <Border
+                                Height="150"
+                                Background="Transparent">
+                                <StackPanel Margin="8" Spacing="8">
+                                    <Button Content="Ordinary scrolling Button" />
+                                    <ToggleSwitch Header="Ordinary scrolling ToggleSwitch" IsOn="True" />
+                                    <TextBox Header="Ordinary scrolling TextBox" Text="Controls between shared brush consumers" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- ActivityCalendarGrid analogue: SAME SharedHutaoCardBrush instance. -->
+                            <Grid
+                                x:Name="ActivityCalendarLikeGrid"
+                                Height="355"
+                                MaxHeight="354.6"
+                                Padding="8"
+                                Background="{ThemeResource SharedHutaoCardBrush}"
+                                BorderBrush="#40FFFFFF"
+                                BorderThickness="1"
+                                CornerRadius="4"
+                                ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="300" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Spacing="8">
+                                    <Grid
+                                        Height="104"
+                                        Padding="8"
+                                        Background="{ThemeResource SharedHutaoSurfaceBrush}"
+                                        CornerRadius="4">
+                                        <StackPanel>
+                                            <TextBlock FontWeight="SemiBold" Text="Composite card pool A" />
+                                            <Button Content="Reward A" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid
+                                        Height="104"
+                                        Padding="8"
+                                        Background="{ThemeResource SharedHutaoSurfaceBrush}"
+                                        CornerRadius="4">
+                                        <StackPanel>
+                                            <TextBlock FontWeight="SemiBold" Text="Composite card pool B" />
+                                            <ToggleSwitch Header="Pool B state" IsOn="True" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid
+                                        Height="104"
+                                        Padding="8"
+                                        Background="{ThemeResource SharedHutaoSurfaceBrush}"
+                                        CornerRadius="4">
+                                        <StackPanel>
+                                            <TextBlock FontWeight="SemiBold" Text="Composite card pool C" />
+                                            <Button Content="Reward C" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+
+                                <!-- This matches the GridShimmerStyle wrapper + nested ScrollViewer on the right. -->
+                                <Grid
+                                    Grid.Column="1"
+                                    Background="{ThemeResource SharedHutaoSurfaceBrush}"
+                                    CornerRadius="4">
+                                    <ScrollViewer
+                                        HorizontalScrollBarVisibility="Disabled"
+                                        VerticalScrollBarVisibility="Visible">
+                                        <StackPanel Margin="8" Spacing="8">
+                                            <Grid
+                                                Height="96"
+                                                Padding="8"
+                                                Background="{ThemeResource SharedHutaoSurfaceBrush}"
+                                                CornerRadius="4">
+                                                <Grid ColumnSpacing="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel>
+                                                        <TextBlock FontWeight="SemiBold" Text="幻想真境剧诗" />
+                                                        <TextBlock Text="Remaining: 3 days 13 hours" />
+                                                    </StackPanel>
+                                                    <Button Grid.Column="1" Content="36/36" />
+                                                </Grid>
+                                            </Grid>
+                                            <Grid
+                                                Height="96"
+                                                Padding="8"
+                                                Background="{ThemeResource SharedHutaoSurfaceBrush}"
+                                                CornerRadius="4">
+                                                <Grid ColumnSpacing="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel>
+                                                        <TextBlock FontWeight="SemiBold" Text="银翎翩月，玄鸟结璘" />
+                                                        <TextBlock Text="Remaining: 14 days 13 hours" />
+                                                    </StackPanel>
+                                                    <Button Grid.Column="1" Content="Act 10" />
+                                                </Grid>
+                                            </Grid>
+                                            <Grid
+                                                Height="96"
+                                                Padding="8"
+                                                Background="{ThemeResource SharedHutaoSurfaceBrush}"
+                                                CornerRadius="4">
+                                                <StackPanel>
+                                                    <TextBlock FontWeight="SemiBold" Text="桌上剧团 · 冒险的前夜会" />
+                                                    <TextBlock Text="Remaining: 37 days 0 hours" />
+                                                </StackPanel>
+                                            </Grid>
+                                            <Grid
+                                                Height="96"
+                                                Padding="8"
+                                                Background="{ThemeResource SharedHutaoSurfaceBrush}"
+                                                CornerRadius="4">
+                                                <StackPanel>
+                                                    <TextBlock FontWeight="SemiBold" Text="幽境危战 · 烬煌之役" />
+                                                    <TextBlock Text="Remaining: 0 hours" />
+                                                </StackPanel>
+                                            </Grid>
+                                            <Grid
+                                                Height="96"
+                                                Padding="8"
+                                                Background="{ThemeResource SharedHutaoSurfaceBrush}"
+                                                CornerRadius="4">
+                                                <TextBlock FontSize="20" Text="Nested ScrollViewer extra row" />
+                                            </Grid>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </Grid>
+                            </Grid>
+
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid
+                                    Grid.Column="0"
+                                    Height="220"
+                                    Padding="12"
+                                    Background="{ThemeResource SharedHutaoCardBrush}"
+                                    CornerRadius="4">
+                                    <StackPanel Spacing="12">
+                                        <TextBlock FontSize="20" FontWeight="SemiBold" Text="Achievements Statistics" />
+                                        <TextBlock FontSize="32" Text="1560/1854 - 84.14%" />
+                                        <Button Content="Open achievement details" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid
+                                    Grid.Column="1"
+                                    Height="220"
+                                    Padding="12"
+                                    Background="{ThemeResource SharedHutaoCardBrush}"
+                                    CornerRadius="4">
+                                    <StackPanel Spacing="12">
+                                        <TextBlock FontSize="20" FontWeight="SemiBold" Text="Refresh statistics" />
+                                        <ProgressRing Width="36" Height="36" IsActive="True" />
+                                        <ToggleSwitch Header="Auto refresh" IsOn="True" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid
+                                    Grid.Column="2"
+                                    Height="220"
+                                    Padding="12"
+                                    Background="{ThemeResource SharedHutaoCardBrush}"
+                                    CornerRadius="4">
+                                    <StackPanel Spacing="12">
+                                        <TextBlock FontSize="20" FontWeight="SemiBold" Text="Traveler's Diary" />
+                                        <Button Content="Today: 0" />
+                                        <Button Content="This Month: 7115" />
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+
+                            <Border Height="520" Background="Transparent">
+                                <StackPanel Margin="12" Spacing="12">
+                                    <TextBlock
+                                        FontFamily="Consolas"
+                                        FontSize="26"
+                                        Text="END OF PAGE / keep scrolling to force large ancestor offsets" />
+                                    <Button Content="Bottom Button" />
+                                    <ToggleSwitch Header="Bottom ToggleSwitch" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Frame>
+        </NavigationView>
+    </Grid>
+</UserControl>

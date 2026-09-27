@@ -53,6 +53,7 @@ public sealed partial class MainWindow : Window
     private bool IsMovingEffectScenario => ScenarioSelector.SelectedIndex == 1;
     private bool IsMovingEffectOverControlsScenario => ScenarioSelector.SelectedIndex == 2;
     private bool IsScrollContainedEffectScenario => ScenarioSelector.SelectedIndex == 3;
+    private bool IsHutaoHierarchyScenario => ScenarioSelector.SelectedIndex == 4;
 
     private void ConfigureBaselineCards()
     {
@@ -85,15 +86,18 @@ public sealed partial class MainWindow : Window
         var movingEffects = IsMovingEffectScenario;
         var movingEffectsOverControls = IsMovingEffectOverControlsScenario;
         var scrollContainedEffect = IsScrollContainedEffectScenario;
+        var hutaoHierarchy = IsHutaoHierarchyScenario;
 
         ScrollingBackdropTestRoot.Visibility =
-            !movingEffects && !movingEffectsOverControls && !scrollContainedEffect ? Visibility.Visible : Visibility.Collapsed;
+            !movingEffects && !movingEffectsOverControls && !scrollContainedEffect && !hutaoHierarchy ? Visibility.Visible : Visibility.Collapsed;
         MovingEffectTestRoot.Visibility =
             movingEffects ? Visibility.Visible : Visibility.Collapsed;
         MovingEffectOverControlsTestRoot.Visibility =
             movingEffectsOverControls ? Visibility.Visible : Visibility.Collapsed;
         ScrollContainedEffectTestRoot.Visibility =
             scrollContainedEffect ? Visibility.Visible : Visibility.Collapsed;
+        HutaoHierarchyRepro.Visibility =
+            hutaoHierarchy ? Visibility.Visible : Visibility.Collapsed;
 
         if (AutoMotionToggle.IsOn)
         {
@@ -378,9 +382,11 @@ public sealed partial class MainWindow : Window
 
     private void ScrollTimer_Tick(object? sender, object args)
     {
-        var scroller = IsScrollContainedEffectScenario
-            ? ScrollContainedEffectScroller
-            : BackdropSourceScroller;
+        var scroller = IsHutaoHierarchyScenario
+            ? HutaoHierarchyRepro.Scroller
+            : IsScrollContainedEffectScenario
+                ? ScrollContainedEffectScroller
+                : BackdropSourceScroller;
 
         var maximum = scroller.ScrollableHeight;
         if (maximum <= 0)
@@ -412,6 +418,7 @@ public sealed partial class MainWindow : Window
         _scrollDirection = 1.0;
         BackdropSourceScroller.ChangeView(null, 0, null, true);
         ScrollContainedEffectScroller.ChangeView(null, 0, null, true);
+        HutaoHierarchyRepro.Scroller.ChangeView(null, 0, null, true);
 
         var movingVisual = ElementCompositionPreview.GetElementVisual(MovingEffectHost);
         movingVisual.Offset = new Vector3(20.0f, movingVisual.Offset.Y, movingVisual.Offset.Z);

@@ -53,6 +53,7 @@
                     <ComboBoxItem Content="Move effect visuals" />
                     <ComboBoxItem Content="Move effects over real controls" />
                     <ComboBoxItem Content="Effect child inside ScrollViewer" />
+                    <ComboBoxItem Content="Hutao hierarchy / shared LiquidGlass" />
                 </ComboBox>
             </StackPanel>
 
@@ -560,6 +561,12 @@
                         Text="For the closest DManip path, also test with mouse wheel / touchpad." />
                 </Border>
             </Grid>
+
+            <!-- Scenario 5: mirrors Snap.Hutao's MainView -> NavigationView -> Frame ->
+                 page ScrollViewer hierarchy and reuses the same LiquidGlassBrush resources. -->
+            <local:HutaoHierarchyReproControl
+                x:Name="HutaoHierarchyRepro"
+                Visibility="Collapsed" />
         </Grid>
     </Grid>
 </Window>
