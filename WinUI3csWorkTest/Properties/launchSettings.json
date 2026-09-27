@@ -1,7 +1,8 @@
 {
   "profiles": {
     "WinUI3csWorkTest (Package)": {
-      "commandName": "MsixPackage"
+      "commandName": "MsixPackage",
+      "nativeDebugging": true
     },
     "WinUI3csWorkTest (Unpackaged)": {
       "commandName": "Project"
