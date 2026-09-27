@@ -63,7 +63,7 @@ public sealed partial class MainWindow : Window
         InvertCard.Background = new BackdropEffectBrush(BackdropEffectKind.Invert);
         SepiaCard.Background = new BackdropEffectBrush(BackdropEffectKind.Sepia);
         ExposureCard.Background = new BackdropEffectBrush(BackdropEffectKind.Exposure);
-        TransformCard.Background = new BackdropEffectBrush(BackdropEffectKind.Transform2D);
+        GrayscaleCard.Background = new BackdropEffectBrush(BackdropEffectKind.Grayscale);
     }
 
     private async Task LoadWallpaperAndPopulateRowsAsync()

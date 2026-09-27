@@ -190,14 +190,14 @@
                 </Border>
 
                 <Border
-                    x:Name="TransformCard"
+                    x:Name="GrayscaleCard"
                     Grid.Row="2"
                     Grid.Column="2"
                     Margin="8"
                     BorderBrush="#E8FFFFFF"
                     BorderThickness="1"
                     CornerRadius="16">
-                    <local:EffectCardLabel Title="Transform2DEffect" Subtitle="Translate = (18, 12)" />
+                    <local:EffectCardLabel Title="GrayscaleEffect" Subtitle="Pointwise grayscale transform" />
                 </Border>
             </Grid>
 

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Graphics.Canvas.Effects;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml.Media;
-using System.Numerics;
 using Windows.Graphics.Effects;
 
 namespace WinUI3csWorkTest;
@@ -15,7 +14,7 @@ internal enum BackdropEffectKind
     Invert,
     Sepia,
     Exposure,
-    Transform2D
+    Grayscale
 }
 
 internal sealed class BackdropEffectBrush : XamlCompositionBrushBase
@@ -101,11 +100,10 @@ internal sealed class BackdropEffectBrush : XamlCompositionBrushBase
                 Source = source,
                 Exposure = 1.25f
             },
-            BackdropEffectKind.Transform2D => new Transform2DEffect
+            BackdropEffectKind.Grayscale => new GrayscaleEffect
             {
-                Name = "Transform2D",
-                Source = source,
-                TransformMatrix = Matrix3x2.CreateTranslation(18.0f, 12.0f)
+                Name = "Grayscale",
+                Source = source
             },
             _ => throw new System.ArgumentOutOfRangeException(nameof(kind), kind, null)
         };
