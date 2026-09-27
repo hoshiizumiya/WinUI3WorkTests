@@ -1,4 +1,4 @@
-using Microsoft.Graphics.Canvas.Effects;
+﻿using Microsoft.Graphics.Canvas.Effects;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml.Media;
 using System.Numerics;
@@ -107,7 +107,7 @@ internal sealed class BackdropEffectBrush : XamlCompositionBrushBase
                 Source = source,
                 TransformMatrix = Matrix3x2.CreateTranslation(18.0f, 12.0f)
             },
-            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
+            _ => throw new System.ArgumentOutOfRangeException(nameof(kind), kind, null)
         };
     }
 }
