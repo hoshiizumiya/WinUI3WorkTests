@@ -52,16 +52,19 @@ public sealed partial class MainWindow : Window
 
     private bool IsMovingEffectScenario => ScenarioSelector.SelectedIndex == 1;
     private bool IsMovingEffectOverControlsScenario => ScenarioSelector.SelectedIndex == 2;
+    private bool IsScrollContainedEffectScenario => ScenarioSelector.SelectedIndex == 3;
 
     private void ConfigureBaselineCards()
     {
         RawBackdropCard.Background = new BackdropEffectBrush(BackdropEffectKind.RawBackdrop);
         MovingRawBackdropCard.Background = new BackdropEffectBrush(BackdropEffectKind.RawBackdrop);
         LiveControlsRawBackdropCard.Background = new BackdropEffectBrush(BackdropEffectKind.RawBackdrop);
+        ScrollContainedRawBackdropCard.Background = new BackdropEffectBrush(BackdropEffectKind.RawBackdrop);
 
         AcrylicCard.Background = CreateAcrylicBrush();
         MovingAcrylicCard.Background = CreateAcrylicBrush();
         LiveControlsAcrylicCard.Background = CreateAcrylicBrush();
+        ScrollContainedAcrylicCard.Background = CreateAcrylicBrush();
     }
 
     private static AcrylicBrush CreateAcrylicBrush()
@@ -81,13 +84,16 @@ public sealed partial class MainWindow : Window
 
         var movingEffects = IsMovingEffectScenario;
         var movingEffectsOverControls = IsMovingEffectOverControlsScenario;
+        var scrollContainedEffect = IsScrollContainedEffectScenario;
 
         ScrollingBackdropTestRoot.Visibility =
-            !movingEffects && !movingEffectsOverControls ? Visibility.Visible : Visibility.Collapsed;
+            !movingEffects && !movingEffectsOverControls && !scrollContainedEffect ? Visibility.Visible : Visibility.Collapsed;
         MovingEffectTestRoot.Visibility =
             movingEffects ? Visibility.Visible : Visibility.Collapsed;
         MovingEffectOverControlsTestRoot.Visibility =
             movingEffectsOverControls ? Visibility.Visible : Visibility.Collapsed;
+        ScrollContainedEffectTestRoot.Visibility =
+            scrollContainedEffect ? Visibility.Visible : Visibility.Collapsed;
 
         if (AutoMotionToggle.IsOn)
         {
@@ -122,10 +128,12 @@ public sealed partial class MainWindow : Window
         SelectedEffectCard.Background = null;
         MovingSelectedEffectCard.Background = null;
         LiveControlsSelectedEffectCard.Background = null;
+        ScrollContainedSelectedEffectCard.Background = null;
 
         SelectedEffectCard.Background = new BackdropEffectBrush(kind);
         MovingSelectedEffectCard.Background = new BackdropEffectBrush(kind);
         LiveControlsSelectedEffectCard.Background = new BackdropEffectBrush(kind);
+        ScrollContainedSelectedEffectCard.Background = new BackdropEffectBrush(kind);
 
         var (title, detail) = kind switch
         {
@@ -145,6 +153,8 @@ public sealed partial class MainWindow : Window
         MovingSelectedEffectLabel.Subtitle = $"Moving visual; static backdrop. {detail}";
         LiveControlsSelectedEffectLabel.Title = title;
         LiveControlsSelectedEffectLabel.Subtitle = $"Moving visual over real controls. {detail}";
+        ScrollContainedSelectedEffectLabel.Title = title;
+        ScrollContainedSelectedEffectLabel.Subtitle = $"Child of ScrollViewer content. {detail}";
     }
 
     private async Task LoadWallpaperAndPopulateRowsAsync()
@@ -178,6 +188,9 @@ public sealed partial class MainWindow : Window
             : CreateWallpaperBrush(wallpaper, AlignmentY.Center);
         LiveControlsWallpaperBackground.Background = wallpaper is null
             ? CreateFallbackBrush(1)
+            : CreateWallpaperBrush(wallpaper, AlignmentY.Center);
+        ScrollContainedFixedWallpaperBackground.Background = wallpaper is null
+            ? CreateFallbackBrush(0)
             : CreateWallpaperBrush(wallpaper, AlignmentY.Center);
     }
 
@@ -365,13 +378,17 @@ public sealed partial class MainWindow : Window
 
     private void ScrollTimer_Tick(object? sender, object args)
     {
-        var maximum = BackdropSourceScroller.ScrollableHeight;
+        var scroller = IsScrollContainedEffectScenario
+            ? ScrollContainedEffectScroller
+            : BackdropSourceScroller;
+
+        var maximum = scroller.ScrollableHeight;
         if (maximum <= 0)
         {
             return;
         }
 
-        var next = BackdropSourceScroller.VerticalOffset + MotionSpeedSlider.Value * _scrollDirection;
+        var next = scroller.VerticalOffset + MotionSpeedSlider.Value * _scrollDirection;
 
         if (next >= maximum)
         {
@@ -384,7 +401,7 @@ public sealed partial class MainWindow : Window
             _scrollDirection = 1.0;
         }
 
-        BackdropSourceScroller.ChangeView(null, next, null, true);
+        scroller.ChangeView(null, next, null, true);
     }
 
     private void ResetMotion_Click(object sender, RoutedEventArgs e)
@@ -394,6 +411,7 @@ public sealed partial class MainWindow : Window
 
         _scrollDirection = 1.0;
         BackdropSourceScroller.ChangeView(null, 0, null, true);
+        ScrollContainedEffectScroller.ChangeView(null, 0, null, true);
 
         var movingVisual = ElementCompositionPreview.GetElementVisual(MovingEffectHost);
         movingVisual.Offset = new Vector3(20.0f, movingVisual.Offset.Y, movingVisual.Offset.Z);

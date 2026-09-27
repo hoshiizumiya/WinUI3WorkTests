@@ -52,6 +52,7 @@
                     <ComboBoxItem Content="Move backdrop content" />
                     <ComboBoxItem Content="Move effect visuals" />
                     <ComboBoxItem Content="Move effects over real controls" />
+                    <ComboBoxItem Content="Effect child inside ScrollViewer" />
                 </ComboBox>
             </StackPanel>
 
@@ -381,6 +382,183 @@
                             Subtitle="Moving visual over real controls" />
                     </Border>
                 </Grid>
+            </Grid>
+
+            <!-- Scenario 4: the effect itself is a child of ScrollViewer content.
+                 Scrolling moves the effect through ScrollViewer/DManip ancestor transforms. -->
+            <Grid
+                x:Name="ScrollContainedEffectTestRoot"
+                Visibility="Collapsed">
+                <Border x:Name="ScrollContainedFixedWallpaperBackground" />
+
+                <!-- Fixed content behind the transparent ScrollViewer. These controls do not move. -->
+                <Grid IsHitTestVisible="False">
+                    <StackPanel
+                        Margin="32,28,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Orientation="Horizontal"
+                        Spacing="12">
+                        <Button Content="[Dev] Invert Theme" />
+                        <DropDownButton Content="Background task">
+                            <DropDownButton.Flyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Task A" />
+                                    <MenuFlyoutItem Text="Task B" />
+                                </MenuFlyout>
+                            </DropDownButton.Flyout>
+                        </DropDownButton>
+                        <ToggleSwitch Header="Fixed header control" IsOn="True" />
+                    </StackPanel>
+
+                    <StackPanel
+                        Margin="32,104,32,0"
+                        VerticalAlignment="Top"
+                        Spacing="10">
+                        <Border Height="46" Background="#D9FFFFFF" />
+                        <Border Height="46" Background="#D9202020" />
+                        <TextBlock
+                            FontFamily="Consolas"
+                            FontSize="32"
+                            FontWeight="Bold"
+                            Foreground="White"
+                            Text="FIXED BACKDROP MARKER 00 11 22 33 44 55" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Important: Background is intentionally ordinary/transparent.
+                     The backdrop effect is on a CHILD inside the scrolling content. -->
+                <ScrollViewer
+                    x:Name="ScrollContainedEffectScroller"
+                    Background="Transparent"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Visible">
+                    <StackPanel
+                        Padding="24"
+                        Spacing="18">
+
+                        <Border Height="240" Background="Transparent">
+                            <TextBlock
+                                Margin="12"
+                                VerticalAlignment="Bottom"
+                                FontSize="18"
+                                Opacity="0.8"
+                                Text="Scroll down. The effect panels below are children of this ScrollViewer content." />
+                        </Border>
+
+                        <Grid Height="520">
+                            <!-- Real controls that move in the same ScrollViewer subtree. -->
+                            <Grid Padding="16" ColumnSpacing="18">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Spacing="12">
+                                    <TextBlock FontSize="22" FontWeight="SemiBold" Text="Scrolling controls A" />
+                                    <Button Content="Button A1" />
+                                    <ToggleSwitch Header="Toggle A2" IsOn="True" />
+                                    <CheckBox Content="Check A3" IsChecked="True" />
+                                    <TextBox Header="Text A4" Text="ScrollViewer child" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Spacing="12">
+                                    <TextBlock FontSize="22" FontWeight="SemiBold" Text="Scrolling controls B" />
+                                    <Button Content="Button B1" />
+                                    <ComboBox Header="Combo B2" SelectedIndex="1">
+                                        <ComboBoxItem Content="First" />
+                                        <ComboBoxItem Content="Second" />
+                                        <ComboBoxItem Content="Third" />
+                                    </ComboBox>
+                                    <Slider Header="Slider B3" Minimum="0" Maximum="100" Value="68" />
+                                    <ProgressBar Height="8" Maximum="100" Value="54" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2" Spacing="12">
+                                    <TextBlock FontSize="22" FontWeight="SemiBold" Text="Scrolling controls C" />
+                                    <Button Content="Button C1" />
+                                    <RadioButton Content="Radio C2" IsChecked="True" />
+                                    <CalendarDatePicker Header="Date C3" />
+                                    <RatingControl Value="4" />
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- These effect-bearing elements are themselves moved by the ScrollViewer. -->
+                            <Grid
+                                Margin="40,220,40,18"
+                                IsHitTestVisible="False"
+                                ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <Border
+                                    x:Name="ScrollContainedRawBackdropCard"
+                                    Grid.Column="0"
+                                    BorderBrush="#E8FFFFFF"
+                                    BorderThickness="1">
+                                    <local:EffectCardLabel
+                                        Title="Raw CompositionBackdropBrush"
+                                        Subtitle="Child of ScrollViewer content" />
+                                </Border>
+
+                                <Border
+                                    x:Name="ScrollContainedAcrylicCard"
+                                    Grid.Column="1"
+                                    BorderBrush="#E8FFFFFF"
+                                    BorderThickness="1">
+                                    <local:EffectCardLabel
+                                        Title="WinUI AcrylicBrush"
+                                        Subtitle="Child of ScrollViewer content" />
+                                </Border>
+
+                                <Border
+                                    x:Name="ScrollContainedSelectedEffectCard"
+                                    Grid.Column="2"
+                                    BorderBrush="#E8FFFFFF"
+                                    BorderThickness="1">
+                                    <local:EffectCardLabel
+                                        x:Name="ScrollContainedSelectedEffectLabel"
+                                        Title="GaussianBlurEffect"
+                                        Subtitle="Child of ScrollViewer content" />
+                                </Border>
+                            </Grid>
+                        </Grid>
+
+                        <Border Height="500" Background="Transparent">
+                            <StackPanel
+                                Margin="12"
+                                VerticalAlignment="Top"
+                                Spacing="12">
+                                <TextBlock
+                                    FontSize="24"
+                                    FontWeight="SemiBold"
+                                    Text="More scrolling content" />
+                                <Button Content="Button after effect panel" />
+                                <ToggleSwitch Header="Another scrolling control" />
+                                <TextBlock
+                                    FontFamily="Consolas"
+                                    FontSize="32"
+                                    Text="SCROLL CONTENT 66 77 88 99" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <Border
+                    Margin="12"
+                    Padding="8,5"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Background="#D9161616">
+                    <TextBlock
+                        FontFamily="Consolas"
+                        FontSize="12"
+                        Text="For the closest DManip path, also test with mouse wheel / touchpad." />
+                </Border>
             </Grid>
         </Grid>
     </Grid>
