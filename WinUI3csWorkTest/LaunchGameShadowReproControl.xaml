@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="WinUI3csWorkTest.LaunchGameShadowReproControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:cw="using:CommunityToolkit.WinUI"
+    xmlns:cwm="using:CommunityToolkit.WinUI.Media"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:hlsl="using:WinUI.Composition.Hlsl"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    UseLayoutRounding="False">
+
+    <UserControl.Resources>
+        <cwm:AttachedCardShadow
+            x:Key="CompatCardShadow"
+            BlurRadius="8"
+            Opacity="0.28"
+            Offset="0,4,0" />
+
+        <hlsl:LiquidGlassBrush
+            x:Key="LaunchGameGlassBrush"
+            BlurRadius="0"
+            BorderThickness="0"
+            CornerRadius="4"
+            DispersionStrength="1.2"
+            FallbackColor="#D92C2C2C"
+            GlassThickness="10"
+            InnerShadowStrength="0.1"
+            MagnificationStrength="45"
+            MaterialOpacity="1"
+            RefractiveIndex="3"
+            Saturation="1"
+            SpecularSaturation="1"
+            HighlightStrength="1.6"
+            IsEnabled="True"
+            RefractionStrength="50" />
+    </UserControl.Resources>
+
+    <Grid Background="#202020">
+        <Pivot>
+            <Pivot.RightHeader>
+                <CommandBar DefaultLabelPosition="Right">
+                    <CommandBar.Content>
+                        <TextBlock
+                            Margin="12,14,12,0"
+                            VerticalAlignment="Center"
+                            Text="Launch status" />
+                    </CommandBar.Content>
+                    <AppBarButton Icon="Folder" Label="Open Screenshots Folder" />
+                    <AppBarButton Icon="OpenFile" Label="Select Game Path" />
+                    <AppBarButton Icon="Cancel" IsEnabled="False" Label="Kill the process" />
+                    <AppBarButton Icon="Play" Label="Game Launcher" />
+                </CommandBar>
+            </Pivot.RightHeader>
+
+            <PivotItem Header="Game Options">
+                <ScrollViewer
+                    x:Name="RootScroller"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Visible">
+                    <StackPanel
+                        Margin="16"
+                        Spacing="16">
+                        <StackPanel.ChildrenTransitions>
+                            <EntranceThemeTransition FromVerticalOffset="50" />
+                            <RepositionThemeTransition IsStaggeringEnabled="False" />
+                        </StackPanel.ChildrenTransitions>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Button
+                                HorizontalAlignment="Left"
+                                Click="ToggleReposition_Click"
+                                Content="Toggle 64-DIP element above glass (force RepositionThemeTransition)" />
+
+                            <Border
+                                x:Name="RepositionBump"
+                                Grid.Row="1"
+                                Height="64"
+                                Margin="0,8,0,0"
+                                Background="#4060A0FF" />
+                        </Grid>
+
+                        <!-- Exact Hutao pattern: shadow belongs to the outer Border,
+                             while LiquidGlass is on the inner rounded Grid. -->
+                        <Border cw:Effects.Shadow="{StaticResource CompatCardShadow}">
+                            <Grid
+                                Height="146"
+                                Padding="16"
+                                Background="{StaticResource LaunchGameGlassBrush}"
+                                BorderBrush="#40FFFFFF"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <StackPanel
+                                    HorizontalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="8">
+                                    <FontIcon Glyph="&#xE7BA;" />
+                                    <TextBlock
+                                        FontSize="16"
+                                        Foreground="#FFFF9B9B"
+                                        Text="Admin Privileges Required" />
+                                </StackPanel>
+
+                                <TextBlock
+                                    Grid.Row="1"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="16"
+                                    Text="Game file management / switching the game server / injection feature requires admin permission" />
+                            </Grid>
+                        </Border>
+
+                        <Border cw:Effects.Shadow="{StaticResource CompatCardShadow}">
+                            <Grid
+                                Height="170"
+                                Padding="16"
+                                Background="{StaticResource LaunchGameGlassBrush}"
+                                BorderBrush="#40FFFFFF"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <StackPanel Spacing="10">
+                                    <TextBlock FontSize="20" FontWeight="SemiBold" Text="Account operations" />
+                                    <Button Content="Sign in with MiYouShe/HoYoLAB user" />
+                                    <ToggleSwitch Header="Use selected account" IsOn="True" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <Border Height="700" Background="Transparent">
+                            <StackPanel Margin="8" Spacing="12">
+                                <TextBlock
+                                    FontFamily="Consolas"
+                                    FontSize="26"
+                                    Text="MORE CONTENT / scroll and toggle the layout bump repeatedly" />
+                                <Button Content="Bottom Button" />
+                                <ToggleSwitch Header="Bottom Toggle" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </PivotItem>
+
+            <PivotItem Header="Custom startup">
+                <Grid />
+            </PivotItem>
+
+            <PivotItem Header="Injection Options">
+                <Grid />
+            </PivotItem>
+        </Pivot>
+    </Grid>
+</UserControl>

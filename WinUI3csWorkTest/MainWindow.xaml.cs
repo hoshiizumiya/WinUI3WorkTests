@@ -57,6 +57,7 @@ public sealed partial class MainWindow : Window
     private bool IsScrollContainedEffectScenario => ScenarioSelector.SelectedIndex == 3;
     private bool IsHutaoHierarchyScenario => ScenarioSelector.SelectedIndex == 4;
     private bool IsTitleBarSingleGlassScenario => ScenarioSelector.SelectedIndex == 5;
+    private bool IsLaunchGameShadowScenario => ScenarioSelector.SelectedIndex == 6;
 
     private void ConfigureBaselineCards()
     {
@@ -91,9 +92,10 @@ public sealed partial class MainWindow : Window
         var scrollContainedEffect = IsScrollContainedEffectScenario;
         var hutaoHierarchy = IsHutaoHierarchyScenario;
         var titleBarSingleGlass = IsTitleBarSingleGlassScenario;
+        var launchGameShadow = IsLaunchGameShadowScenario;
 
         ScrollingBackdropTestRoot.Visibility =
-            !movingEffects && !movingEffectsOverControls && !scrollContainedEffect && !hutaoHierarchy && !titleBarSingleGlass ? Visibility.Visible : Visibility.Collapsed;
+            !movingEffects && !movingEffectsOverControls && !scrollContainedEffect && !hutaoHierarchy && !titleBarSingleGlass && !launchGameShadow ? Visibility.Visible : Visibility.Collapsed;
         MovingEffectTestRoot.Visibility =
             movingEffects ? Visibility.Visible : Visibility.Collapsed;
         MovingEffectOverControlsTestRoot.Visibility =
@@ -104,6 +106,8 @@ public sealed partial class MainWindow : Window
             hutaoHierarchy ? Visibility.Visible : Visibility.Collapsed;
         TitleBarSingleGlassRepro.Visibility =
             titleBarSingleGlass ? Visibility.Visible : Visibility.Collapsed;
+        LaunchGameShadowRepro.Visibility =
+            launchGameShadow ? Visibility.Visible : Visibility.Collapsed;
 
         if (AutoMotionToggle.IsOn)
         {
@@ -388,9 +392,11 @@ public sealed partial class MainWindow : Window
 
     private void ScrollTimer_Tick(object? sender, object args)
     {
-        var scroller = IsTitleBarSingleGlassScenario
-            ? TitleBarSingleGlassRepro.Scroller
-            : IsHutaoHierarchyScenario
+        var scroller = IsLaunchGameShadowScenario
+            ? LaunchGameShadowRepro.Scroller
+            : IsTitleBarSingleGlassScenario
+                ? TitleBarSingleGlassRepro.Scroller
+                : IsHutaoHierarchyScenario
                 ? HutaoHierarchyRepro.Scroller
                 : IsScrollContainedEffectScenario
                     ? ScrollContainedEffectScroller
@@ -428,6 +434,7 @@ public sealed partial class MainWindow : Window
         ScrollContainedEffectScroller.ChangeView(null, 0, null, true);
         HutaoHierarchyRepro.Scroller.ChangeView(null, 0, null, true);
         TitleBarSingleGlassRepro.Scroller.ChangeView(null, 0, null, true);
+        LaunchGameShadowRepro.Scroller.ChangeView(null, 0, null, true);
 
         var movingVisual = ElementCompositionPreview.GetElementVisual(MovingEffectHost);
         movingVisual.Offset = new Vector3(20.0f, movingVisual.Offset.Y, movingVisual.Offset.Z);

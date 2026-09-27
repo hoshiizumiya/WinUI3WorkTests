@@ -107,6 +107,7 @@
                     <ComboBoxItem Content="Effect child inside ScrollViewer" />
                     <ComboBoxItem Content="Hutao hierarchy / shared LiquidGlass" />
                     <ComboBoxItem Content="Real TitleBar + single scrolled LiquidGlass" />
+                    <ComboBoxItem Content="Pivot + CardShadow + reposition transition" />
                 </ComboBox>
             </StackPanel>
 
@@ -623,6 +624,10 @@
 
             <local:TitleBarSingleGlassReproControl
                 x:Name="TitleBarSingleGlassRepro"
+                Visibility="Collapsed" />
+
+            <local:LaunchGameShadowReproControl
+                x:Name="LaunchGameShadowRepro"
                 Visibility="Collapsed" />
         </Grid>
     </Grid>
