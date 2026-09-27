@@ -16,8 +16,60 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TitleBar Grid.Row="0" Height="36">
-            <TextBlock FontSize="14" Text="Composition backdrop invalidation repro" />
+        <TitleBar
+            x:Name="WindowTitleBar"
+            Grid.Row="0"
+            Title="Composition backdrop invalidation repro"
+            IsPaneToggleButtonVisible="True">
+            <TitleBar.Resources>
+                <x:Double x:Key="TitleBarCompactHeight">44</x:Double>
+                <x:Double x:Key="TitleBarExpandedHeight">44</x:Double>
+                <x:Double x:Key="TitleBarMinDragRegionWidth">0</x:Double>
+            </TitleBar.Resources>
+            <TitleBar.RightHeader>
+                <StackPanel
+                    Margin="0,0,6,0"
+                    Orientation="Horizontal"
+                    Spacing="6">
+                    <Button
+                        x:Name="TitleBarInvertThemeButton"
+                        Padding="6"
+                        Content="[Dev] Invert Theme" />
+                    <Button
+                        x:Name="TitleBarBackgroundTaskButton"
+                        Padding="0"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch">
+                        <Button.Content>
+                            <Border Padding="16,6">
+                                <Grid ColumnSpacing="6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Text="Background task" />
+                                    <FontIcon
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        FontSize="12"
+                                        Glyph="&#xE70D;" />
+                                </Grid>
+                            </Border>
+                        </Button.Content>
+                        <Button.Flyout>
+                            <Flyout Placement="Bottom">
+                                <StackPanel Width="280" Spacing="8">
+                                    <ProgressBar IsIndeterminate="True" />
+                                    <TextBlock Text="Metadata initialization" />
+                                    <TextBlock Text="Full trust initialization" />
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                </StackPanel>
+            </TitleBar.RightHeader>
         </TitleBar>
 
         <Grid
@@ -54,6 +106,7 @@
                     <ComboBoxItem Content="Move effects over real controls" />
                     <ComboBoxItem Content="Effect child inside ScrollViewer" />
                     <ComboBoxItem Content="Hutao hierarchy / shared LiquidGlass" />
+                    <ComboBoxItem Content="Real TitleBar + single scrolled LiquidGlass" />
                 </ComboBox>
             </StackPanel>
 
@@ -566,6 +619,10 @@
                  page ScrollViewer hierarchy and reuses the same LiquidGlassBrush resources. -->
             <local:HutaoHierarchyReproControl
                 x:Name="HutaoHierarchyRepro"
+                Visibility="Collapsed" />
+
+            <local:TitleBarSingleGlassReproControl
+                x:Name="TitleBarSingleGlassRepro"
                 Visibility="Collapsed" />
         </Grid>
     </Grid>

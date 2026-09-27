@@ -29,7 +29,9 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        ExtendsContentIntoTitleBar = true;
+
+        AppWindow.TitleBar.IconShowOptions = Microsoft.UI.Windowing.IconShowOptions.HideIconAndSystemMenu;
+        AppWindow.TitleBar.ExtendsContentIntoTitleBar = true;
 
         _scrollTimer = DispatcherQueue.CreateTimer();
         _scrollTimer.Interval = TimeSpan.FromMilliseconds(33);
@@ -54,6 +56,7 @@ public sealed partial class MainWindow : Window
     private bool IsMovingEffectOverControlsScenario => ScenarioSelector.SelectedIndex == 2;
     private bool IsScrollContainedEffectScenario => ScenarioSelector.SelectedIndex == 3;
     private bool IsHutaoHierarchyScenario => ScenarioSelector.SelectedIndex == 4;
+    private bool IsTitleBarSingleGlassScenario => ScenarioSelector.SelectedIndex == 5;
 
     private void ConfigureBaselineCards()
     {
@@ -87,9 +90,10 @@ public sealed partial class MainWindow : Window
         var movingEffectsOverControls = IsMovingEffectOverControlsScenario;
         var scrollContainedEffect = IsScrollContainedEffectScenario;
         var hutaoHierarchy = IsHutaoHierarchyScenario;
+        var titleBarSingleGlass = IsTitleBarSingleGlassScenario;
 
         ScrollingBackdropTestRoot.Visibility =
-            !movingEffects && !movingEffectsOverControls && !scrollContainedEffect && !hutaoHierarchy ? Visibility.Visible : Visibility.Collapsed;
+            !movingEffects && !movingEffectsOverControls && !scrollContainedEffect && !hutaoHierarchy && !titleBarSingleGlass ? Visibility.Visible : Visibility.Collapsed;
         MovingEffectTestRoot.Visibility =
             movingEffects ? Visibility.Visible : Visibility.Collapsed;
         MovingEffectOverControlsTestRoot.Visibility =
@@ -98,6 +102,8 @@ public sealed partial class MainWindow : Window
             scrollContainedEffect ? Visibility.Visible : Visibility.Collapsed;
         HutaoHierarchyRepro.Visibility =
             hutaoHierarchy ? Visibility.Visible : Visibility.Collapsed;
+        TitleBarSingleGlassRepro.Visibility =
+            titleBarSingleGlass ? Visibility.Visible : Visibility.Collapsed;
 
         if (AutoMotionToggle.IsOn)
         {
@@ -382,11 +388,13 @@ public sealed partial class MainWindow : Window
 
     private void ScrollTimer_Tick(object? sender, object args)
     {
-        var scroller = IsHutaoHierarchyScenario
-            ? HutaoHierarchyRepro.Scroller
-            : IsScrollContainedEffectScenario
-                ? ScrollContainedEffectScroller
-                : BackdropSourceScroller;
+        var scroller = IsTitleBarSingleGlassScenario
+            ? TitleBarSingleGlassRepro.Scroller
+            : IsHutaoHierarchyScenario
+                ? HutaoHierarchyRepro.Scroller
+                : IsScrollContainedEffectScenario
+                    ? ScrollContainedEffectScroller
+                    : BackdropSourceScroller;
 
         var maximum = scroller.ScrollableHeight;
         if (maximum <= 0)
@@ -419,6 +427,7 @@ public sealed partial class MainWindow : Window
         BackdropSourceScroller.ChangeView(null, 0, null, true);
         ScrollContainedEffectScroller.ChangeView(null, 0, null, true);
         HutaoHierarchyRepro.Scroller.ChangeView(null, 0, null, true);
+        TitleBarSingleGlassRepro.Scroller.ChangeView(null, 0, null, true);
 
         var movingVisual = ElementCompositionPreview.GetElementVisual(MovingEffectHost);
         movingVisual.Offset = new Vector3(20.0f, movingVisual.Offset.Y, movingVisual.Offset.Z);

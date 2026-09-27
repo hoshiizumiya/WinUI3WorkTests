@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="WinUI3csWorkTest.TitleBarSingleGlassReproControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:hlsl="using:WinUI.Composition.Hlsl"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <hlsl:LiquidGlassBrush
+            x:Key="SingleGlassBrush"
+            BlurRadius="0"
+            BorderThickness="0"
+            CornerRadius="4"
+            DispersionStrength="1.2"
+            FallbackColor="#D92C2C2C"
+            GlassThickness="10"
+            InnerShadowStrength="0.1"
+            MagnificationStrength="45"
+            MaterialOpacity="1"
+            RefractiveIndex="3"
+            Saturation="1"
+            SpecularSaturation="1"
+            HighlightStrength="1.6"
+            IsEnabled="True"
+            RefractionStrength="50" />
+    </UserControl.Resources>
+
+    <Grid Background="#202020">
+        <ScrollViewer
+            x:Name="RootScroller"
+            Background="Transparent"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Visible">
+            <StackPanel
+                Padding="16"
+                Spacing="16">
+                <Border Height="120" Background="Transparent">
+                    <StackPanel Margin="8" Spacing="8">
+                        <TextBlock
+                            FontSize="22"
+                            FontWeight="SemiBold"
+                            Text="Minimal TitleBar sampling repro" />
+                        <TextBlock
+                            Text="Only one LiquidGlass consumer exists. Scroll this panel beneath the real Window TitleBar." />
+                        <Button Content="Ordinary scrolling Button before glass" />
+                    </StackPanel>
+                </Border>
+
+                <Grid
+                    Height="360"
+                    Padding="12"
+                    Background="{StaticResource SingleGlassBrush}"
+                    CornerRadius="4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        FontSize="24"
+                        FontWeight="SemiBold"
+                        Text="SINGLE LIQUIDGLASS CONSUMER" />
+
+                    <Grid
+                        Grid.Row="1"
+                        Margin="0,12,0,0"
+                        ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Spacing="10">
+                            <Button Content="Button 01" />
+                            <ToggleSwitch Header="Toggle 02" IsOn="True" />
+                            <CheckBox Content="Check 03" IsChecked="True" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="10">
+                            <TextBox Header="TextBox 04" Text="Backdrop target" />
+                            <ComboBox Header="Combo 05" SelectedIndex="0">
+                                <ComboBoxItem Content="First" />
+                                <ComboBoxItem Content="Second" />
+                            </ComboBox>
+                            <Slider Header="Slider 06" Minimum="0" Maximum="100" Value="70" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Spacing="10">
+                            <Button Content="Button 07" />
+                            <ProgressRing Width="32" Height="32" IsActive="True" />
+                            <RatingControl Value="4" />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+
+                <Border Height="900" Background="Transparent">
+                    <StackPanel Margin="8" Spacing="14">
+                        <TextBlock
+                            FontFamily="Consolas"
+                            FontSize="28"
+                            Text="KEEP SCROLLING / large vertical offset" />
+                        <Button Content="Button after glass" />
+                        <ToggleSwitch Header="Bottom scrolling control" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
