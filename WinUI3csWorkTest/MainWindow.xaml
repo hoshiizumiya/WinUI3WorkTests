@@ -1,70 +1,239 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Window
     x:Class="WinUI3csWorkTest.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:dev="using:DevWinUI"
     xmlns:local="using:WinUI3csWorkTest"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="WinUI3csWorkTest"
+    Title="Composition backdrop invalidation repro"
     mc:Ignorable="d">
 
-    <Window.SystemBackdrop>
-        <MicaBackdrop />
-    </Window.SystemBackdrop>
-    <Grid>
+    <Grid Background="#111111">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TitleBar Height="36">
-            <Grid>
-                <TextBlock Text="WinUI3csWorkTest" />
-            </Grid>
-        </TitleBar>
-        <StackPanel Grid.Row="1">
-            <ComboBox dev:ThemeServiceAttach.ThemeService="{x:Bind AppThemeService}">
-                <ComboBoxItem Content="Light" Tag="Light" />
-                <ComboBoxItem Content="Dark" Tag="Dark" />
-                <ComboBoxItem Content="Default" Tag="Default" />
-            </ComboBox>
 
-            <ComboBox dev:ThemeServiceAttach.ThemeService="{x:Bind AppThemeService}">
-                <ComboBoxItem Content="None" Tag="None" />
-                <ComboBoxItem Content="Mica" Tag="Mica" />
-                <ComboBoxItem Content="Mica Alt" Tag="MicaAlt" />
-                <ComboBoxItem Content="Acrylic" Tag="Acrylic" />
-                <ComboBoxItem Content="Acrylic Thin" Tag="AcrylicThin" />
-                <ComboBoxItem Content="Transparent" Tag="Transparent" />
-            </ComboBox>
-        </StackPanel>
-        <StackPanel x:Name="LayoutRoot" Grid.Row="2">
-            <StackPanel
-                Padding="12"
-                BorderBrush="Black"
-                BorderThickness="4">
-                <TextBlock Text="Indeterminate Progress Bar" />
-                <ProgressBar Margin="0,12" IsIndeterminate="True" />
+        <TitleBar Grid.Row="0" Height="36">
+            <TextBlock
+                FontSize="14"
+                Text="Composition backdrop invalidation repro" />
+        </TitleBar>
+
+        <Grid
+            Grid.Row="1"
+            Padding="12,8"
+            Background="#EE202020"
+            ColumnSpacing="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="220" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+                <TextBlock
+                    FontSize="14"
+                    FontWeight="SemiBold"
+                    Text="Scroll the wallpaper-backed XAML content under the fixed effect cards." />
+                <TextBlock
+                    x:Name="WallpaperStatusText"
+                    FontSize="12"
+                    Opacity="0.72"
+                    Text="Loading the current system wallpaper..." />
             </StackPanel>
-            <StackPanel
-                Padding="12"
-                BorderBrush="Black"
-                BorderThickness="4">
-                <TextBlock Text="Value-Based Progress Bar" />
-                <ProgressBar
-                    x:Name="progressBar1"
-                    Margin="0,12"
-                    Maximum="200"
-                    Style="{StaticResource DefaultProgressBarStyle}"
-                    Value="0" />
-                <RepeatButton Click="RepeatButton_Click" Content="Press and hold" />
+
+            <ToggleSwitch
+                x:Name="AutoScrollToggle"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Header="Auto scroll"
+                IsOn="True"
+                Toggled="AutoScrollToggle_Toggled" />
+
+            <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="2">
+                <TextBlock
+                    FontSize="12"
+                    Text="Scroll speed (DIP/frame)" />
+                <Slider
+                    x:Name="ScrollSpeedSlider"
+                    Minimum="1"
+                    Maximum="48"
+                    StepFrequency="1"
+                    Value="18" />
             </StackPanel>
-        </StackPanel>
-        <StackPanel x:Name="FontTest" Grid.Row="3">
-            <TextBlock Text="Indeterminate Progress Bar" />
-        </StackPanel>
+
+            <Button
+                Grid.Column="3"
+                VerticalAlignment="Center"
+                Click="ResetScroll_Click"
+                Content="Reset" />
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <ScrollViewer
+                x:Name="BackdropSourceScroller"
+                HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Visible"
+                ViewChanged="BackdropSourceScroller_ViewChanged">
+                <StackPanel
+                    x:Name="BackdropSourcePanel"
+                    Padding="24"
+                    Spacing="18" />
+            </ScrollViewer>
+
+            <Grid
+                Width="1020"
+                Height="570"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsHitTestVisible="False">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <Border
+                    x:Name="RawBackdropCard"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Margin="8"
+                    BorderBrush="#E8FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="16">
+                    <local:EffectCardLabel
+                        Title="Raw CompositionBackdropBrush"
+                        Subtitle="No effect factory" />
+                </Border>
+
+                <Border
+                    x:Name="AcrylicCard"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="8"
+                    BorderBrush="#E8FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="16">
+                    <local:EffectCardLabel
+                        Title="WinUI AcrylicBrush"
+                        Subtitle="Built-in baseline" />
+                </Border>
+
+                <Border
+                    x:Name="BlurCard"
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Margin="8"
+                    BorderBrush="#E8FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="16">
+                    <local:EffectCardLabel
+                        Title="GaussianBlurEffect"
+                        Subtitle="BlurAmount = 28" />
+                </Border>
+
+                <Border
+                    x:Name="SaturationCard"
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Margin="8"
+                    BorderBrush="#E8FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="16">
+                    <local:EffectCardLabel
+                        Title="SaturationEffect"
+                        Subtitle="Saturation = 0" />
+                </Border>
+
+                <Border
+                    x:Name="HueCard"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="8"
+                    BorderBrush="#E8FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="16">
+                    <local:EffectCardLabel
+                        Title="HueRotationEffect"
+                        Subtitle="Angle = 1.8 rad" />
+                </Border>
+
+                <Border
+                    x:Name="InvertCard"
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Margin="8"
+                    BorderBrush="#E8FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="16">
+                    <local:EffectCardLabel
+                        Title="InvertEffect"
+                        Subtitle="Direct color inversion" />
+                </Border>
+
+                <Border
+                    x:Name="SepiaCard"
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Margin="8"
+                    BorderBrush="#E8FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="16">
+                    <local:EffectCardLabel
+                        Title="SepiaEffect"
+                        Subtitle="Intensity = 1" />
+                </Border>
+
+                <Border
+                    x:Name="ExposureCard"
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Margin="8"
+                    BorderBrush="#E8FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="16">
+                    <local:EffectCardLabel
+                        Title="ExposureEffect"
+                        Subtitle="Exposure = +1.25" />
+                </Border>
+
+                <Border
+                    x:Name="TransformCard"
+                    Grid.Row="2"
+                    Grid.Column="2"
+                    Margin="8"
+                    BorderBrush="#E8FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="16">
+                    <local:EffectCardLabel
+                        Title="Transform2DEffect"
+                        Subtitle="Translate = (18, 12)" />
+                </Border>
+            </Grid>
+
+            <Border
+                Margin="12"
+                Padding="8,4"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Background="#CC101010"
+                CornerRadius="6"
+                IsHitTestVisible="False">
+                <TextBlock
+                    x:Name="ScrollStateText"
+                    FontFamily="Consolas"
+                    FontSize="12"
+                    Text="Offset: 0" />
+            </Border>
+        </Grid>
     </Grid>
 </Window>
