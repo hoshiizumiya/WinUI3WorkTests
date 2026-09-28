@@ -12,5 +12,11 @@ using namespace Microsoft::UI::Xaml;
 
 namespace winrt::WinUI3cppWorkTest::implementation
 {
+	void WETestWindow::ScrollView_Loaded(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+	{
+		BaseExample().ItemsSource(co_await Contact::GetContactsAsync());
+
+	}
+
 
 }
