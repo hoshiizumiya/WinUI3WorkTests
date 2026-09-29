@@ -157,6 +157,10 @@
       <DependentUpon>TaskSampleViewModel.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="TasksPageViewModel.h">
+      <DependentUpon>TasksPageViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="WETestWindow.xaml.h">
       <DependentUpon>WETestWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -227,6 +231,10 @@
       <DependentUpon>TaskSampleViewModel.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="TasksPageViewModel.cpp">
+      <DependentUpon>TasksPageViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="WETestWindow.xaml.cpp">
       <DependentUpon>WETestWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -265,6 +273,9 @@
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="TaskSampleViewModel.idl">
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="TasksPageViewModel.idl">
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="WETestWindow.idl">

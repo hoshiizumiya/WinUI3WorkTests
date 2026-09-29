@@ -1,10 +1,24 @@
-﻿namespace WinUI3cppWorkTest
+namespace WinUI3cppWorkTest
 {
     [default_interface]
     runtimeclass TaskSampleViewModel
     {
-        TaskSampleViewModel(String name);
+        TaskSampleViewModel(String name, Int32 index);
         String Name{ get; };
+        String Size{ get; };
+        String Progress{ get; };
+        String DownloadSize{ get; };
+        String UploadSize{ get; };
+        String TotalDownloadSize{ get; };
+        String TotalUploadSize{ get; };
+        String DownloadRate{ get; };
+        String UploadRate{ get; };
+        String Remaining{ get; };
+        String AddDate{ get; };
+        String CompletedDate{ get; };
+        String ShareRatio{ get; };
+        String Seeds{ get; };
+        String Transport{ get; };
         Double ProgressPercent{ get; };
         Windows.UI.Color ProgressHighColor{ get; };
         Windows.UI.Color ProgressBaseColor{ get; };

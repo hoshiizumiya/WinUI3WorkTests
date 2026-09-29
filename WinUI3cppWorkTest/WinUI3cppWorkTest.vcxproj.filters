@@ -23,6 +23,9 @@
     <Midl Include="TaskSampleViewModel.idl">
       <Filter>Samples\WinUI Essentials</Filter>
     </Midl>
+    <Midl Include="TasksPageViewModel.idl">
+      <Filter>Samples\WinUI Essentials</Filter>
+    </Midl>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -34,6 +37,9 @@
     <ClCompile Include="TaskSampleViewModel.cpp">
       <Filter>Samples\WinUI Essentials</Filter>
     </ClCompile>
+    <ClCompile Include="TasksPageViewModel.cpp">
+      <Filter>Samples\WinUI Essentials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -41,6 +47,9 @@
       <Filter>Samples\WinUI Essentials</Filter>
     </ClInclude>
     <ClInclude Include="TaskSampleViewModel.h">
+      <Filter>Samples\WinUI Essentials</Filter>
+    </ClInclude>
+    <ClInclude Include="TasksPageViewModel.h">
       <Filter>Samples\WinUI Essentials</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,0 +1,10 @@
+namespace WinUI3cppWorkTest
+{
+    [default_interface]
+    runtimeclass TasksPageViewModel
+    {
+        TasksPageViewModel();
+        Windows.Foundation.Collections.IObservableVector<Object> FilteredTasks{ get; };
+        void Initialize();
+    }
+}

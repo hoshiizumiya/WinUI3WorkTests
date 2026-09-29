@@ -13,7 +13,7 @@ namespace winrt::WinUI3cppWorkTest::implementation
     {
         constexpr std::array<double, 14> ColumnWidths{ 420.0, 100.0, 110.0, 110.0, 110.0, 110.0, 100.0, 100.0, 120.0, 150.0, 150.0, 80.0, 90.0, 90.0 };
         constexpr double ColumnSpacing = 16.0;
-        constexpr double RowWidth = 1948.0;
+        constexpr double RowWidth = 2048.0;
     }
 
     winrt::Windows::Foundation::Size TaskDataRow::MeasureOverride(winrt::Windows::Foundation::Size availableSize)

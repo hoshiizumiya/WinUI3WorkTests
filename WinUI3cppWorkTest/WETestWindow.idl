@@ -1,11 +1,9 @@
-﻿namespace WinUI3cppWorkTest
+namespace WinUI3cppWorkTest
 {
     [default_interface]
     runtimeclass WETestWindow : WinUI3Package.WindowEx
     {
         WETestWindow();
-
-        Windows.Foundation.Collections.IObservableVector<Object> TaskItems{ get; };
+        TasksPageViewModel ViewModel{ get; };
     }
-
 }
