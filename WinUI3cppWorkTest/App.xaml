@@ -12,9 +12,10 @@
                 <!--  Other merged dictionaries here  -->
             </ResourceDictionary.MergedDictionaries>
             <!--  Other app resources here  -->
-            <Style BasedOn="{StaticResource DefaultButtonStyle}" TargetType="Button">
+            <!--  Wrong test  -->
+            <!--<Style BasedOn="{StaticResource DefaultButtonStyle}" TargetType="Button">
                 <Setter Property="essential:ComboBoxHelper.AcrylicWorkaround" Value="True" />
-            </Style>
+            </Style>-->
         </ResourceDictionary>
     </Application.Resources>
 </Application>
