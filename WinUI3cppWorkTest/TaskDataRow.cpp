@@ -30,7 +30,7 @@ namespace winrt::WinUI3cppWorkTest::implementation
             maxHeight = std::max<double>(maxHeight, children.GetAt(index).DesiredSize().Height);
         }
 
-        return { static_cast<float>(std::max(RowWidth, totalWidth)), static_cast<float>(maxHeight) };
+        return { static_cast<float>((std::max)(RowWidth, totalWidth)), static_cast<float>(maxHeight) };
     }
 
     winrt::Windows::Foundation::Size TaskDataRow::ArrangeOverride(winrt::Windows::Foundation::Size finalSize)
