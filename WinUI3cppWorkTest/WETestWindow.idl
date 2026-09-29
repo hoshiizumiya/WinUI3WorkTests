@@ -4,6 +4,8 @@
     runtimeclass WETestWindow : WinUI3Package.WindowEx
     {
         WETestWindow();
+
+        Windows.Foundation.Collections.IObservableVector<Object> TaskItems{ get; };
     }
 
 }

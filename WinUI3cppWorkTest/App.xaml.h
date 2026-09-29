@@ -12,6 +12,6 @@ namespace winrt::WinUI3cppWorkTest::implementation
         void OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const&);
 
     private:
-        winrt::Microsoft::UI::Xaml::Window window{ nullptr };
+        winrt::Windows::Foundation::IInspectable window{ nullptr };
     };
 }

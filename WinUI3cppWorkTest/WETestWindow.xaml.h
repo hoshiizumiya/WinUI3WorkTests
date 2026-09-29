@@ -1,52 +1,33 @@
-﻿#pragma once
+#pragma once
 
 #include "WETestWindow.g.h"
+#include <winrt/Windows.Foundation.Collections.h>
 
 namespace winrt::WinUI3cppWorkTest::implementation
 {
     struct WETestWindow : WETestWindowT<WETestWindow>
     {
-        WETestWindow()
-        {
-            ExtendsContentIntoTitleBar(true);
-        }
+        WETestWindow();
 
+        winrt::Windows::Foundation::Collections::IObservableVector<winrt::Windows::Foundation::IInspectable> TaskItems() const;
 
-        void ScrollView_Loaded(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-    };
-
-    struct Contact
-    {
-        Contact(winrt::hstring firstName, winrt::hstring lastName, winrt::hstring company)
-            : m_firstName(std::move(firstName))
-            , m_lastName(std::move(lastName))
-            , m_company(std::move(company))
-        {
-        }
-
-        winrt::hstring FirstName() const
-        {
-            return m_firstName;
-        }
-        winrt::hstring LastName() const
-        {
-            return m_lastName;
-        }
-        winrt::hstring Company() const
-        {
-            return m_company;
-        }
-        winrt::hstring Name() const
-        {
-            return m_firstName + L" " + m_lastName;
-        }
+        void RunColdList_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
+        void RunWarmList_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
+        void RunDirect_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
+        void SampleItem_Loaded(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
 
     private:
-        winrt::hstring m_firstName;
-        winrt::hstring m_lastName;
-        winrt::hstring m_company;
-    };
+        void RunList(bool warm);
+        void AppendLog(winrt::hstring const& message);
+        winrt::Microsoft::UI::Xaml::DataTemplate SelectedTemplate();
+        winrt::Microsoft::UI::Xaml::UIElement CreateSelectedControl();
+        winrt::hstring SelectedControlName();
+        uint32_t DictionaryCount() const;
 
+        bool m_hasRun{};
+        uint32_t m_loadedCount{};
+        winrt::Windows::Foundation::Collections::IObservableVector<winrt::Windows::Foundation::IInspectable> m_taskItems{ nullptr };
+    };
 }
 
 namespace winrt::WinUI3cppWorkTest::factory_implementation

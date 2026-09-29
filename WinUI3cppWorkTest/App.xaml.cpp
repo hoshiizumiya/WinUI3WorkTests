@@ -39,18 +39,10 @@ namespace winrt::WinUI3cppWorkTest::implementation
     /// <param name="e">Details about the launch request and process.</param>
     void App::OnLaunched([[maybe_unused]] LaunchActivatedEventArgs const& e)
     {
-        window = make<MainWindow>();
-        window.Activate();
-
-        //MainWindow mainWindow;
-
-		//com_ptr<implementation::DevWindow> devWindow;
-  //      devWindow->Activate();
-
-  //      auto devWindow = make<implementation::DevWindow>();
-		//devWindow.Activate();
-
-		auto weTestWindow = make<implementation::WETestWindow>();
-		weTestWindow.Activate();
+        // Other sample windows instantiate Essential controls eagerly. Opening one
+        // here would prewarm their dictionaries and invalidate the cold test.
+        auto testWindow = make<implementation::WETestWindow>();
+        window = testWindow;
+        testWindow.Activate();
     }
 }
