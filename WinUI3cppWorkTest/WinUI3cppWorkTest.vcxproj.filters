@@ -17,14 +17,32 @@
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />
+    <Midl Include="TaskDataRow.idl">
+      <Filter>Samples\WinUI Essentials</Filter>
+    </Midl>
+    <Midl Include="TaskSampleViewModel.idl">
+      <Filter>Samples\WinUI Essentials</Filter>
+    </Midl>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
     <ClCompile Include="DoubleToIntConverter.cpp" />
+    <ClCompile Include="TaskDataRow.cpp">
+      <Filter>Samples\WinUI Essentials</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskSampleViewModel.cpp">
+      <Filter>Samples\WinUI Essentials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="TaskDataRow.h">
+      <Filter>Samples\WinUI Essentials</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskSampleViewModel.h">
+      <Filter>Samples\WinUI Essentials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -52,6 +70,9 @@
   <ItemGroup>
     <Filter Include="Assets">
       <UniqueIdentifier>{a1fd3c3c-7f1f-420e-9135-f0ac2a719bca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Samples\WinUI Essentials">
+      <UniqueIdentifier>{f3420914-0316-4fb4-962f-a22e15a02e84}</UniqueIdentifier>
     </Filter>
     <Filter Include="Samples">
       <UniqueIdentifier>{56ad6681-29ac-4b0a-a2ef-9c94f3fb6e22}</UniqueIdentifier>

@@ -1,0 +1,8 @@
+namespace WinUI3cppWorkTest
+{
+    [default_interface]
+    runtimeclass TaskDataRow : Microsoft.UI.Xaml.Controls.Panel
+    {
+        TaskDataRow();
+    }
+}

@@ -1,5 +1,7 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "WETestWindow.xaml.h"
+#include "TaskDataRow.h"
+#include "TaskSampleViewModel.h"
 #if __has_include("WETestWindow.g.cpp")
 #include "WETestWindow.g.cpp"
 #endif
@@ -14,14 +16,9 @@ namespace winrt::WinUI3cppWorkTest::implementation
 {
     WETestWindow::WETestWindow()
     {
-        // Prepare the bound task collection before XAML connects ItemsSource.
-        // The list remains Collapsed until a test starts, so row templates are
-        // realized by XAML only after the scenario has installed its template.
+        // OpenNet binds a visible ListView before the page view model populates
+        // its collection after Loaded. Keep that empty-then-populate lifecycle.
         m_taskItems = single_threaded_observable_vector<IInspectable>();
-        for (int i = 0; i < 500; ++i)
-        {
-            m_taskItems.Append(box_value(L"Task " + to_hstring(i)));
-        }
         InitializeComponent();
         AppendLog(L"Start: merged dictionaries = " + to_hstring(DictionaryCount()));
     }
@@ -54,20 +51,6 @@ namespace winrt::WinUI3cppWorkTest::implementation
         case 3: return L"GroupBox";
         default: throw hresult_invalid_argument(L"Choose a control first.");
         }
-    }
-
-    DataTemplate WETestWindow::SelectedTemplate()
-    {
-        hstring key;
-        switch (ControlChoice().SelectedIndex())
-        {
-        case 0: key = L"ProgressSample"; break;
-        case 1: key = L"CardSample"; break;
-        case 2: key = L"ExpanderSample"; break;
-        case 3: key = L"GroupSample"; break;
-        default: throw hresult_invalid_argument(L"Choose a control first.");
-        }
-        return TestRoot().Resources().Lookup(box_value(key)).as<DataTemplate>();
     }
 
     UIElement WETestWindow::CreateSelectedControl()
@@ -113,26 +96,38 @@ namespace winrt::WinUI3cppWorkTest::implementation
         WarmListButton().IsEnabled(false);
         DirectButton().IsEnabled(false);
 
-        auto const control = SelectedControlName();
         auto const before = DictionaryCount();
-        AppendLog(control + (warm ? L" / prewarm then XAML layout" : L" / cold XAML layout"));
+        AppendLog(warm ? L"ProgressBarEx / prewarm then populate visible ListView" : L"ProgressBarEx / cold populate visible ListView");
         AppendLog(L"Before first construction: " + to_hstring(before));
 
         if (warm)
         {
             // Load this control's global resources before XAML realizes rows.
-            auto prewarmed = CreateSelectedControl();
-            AppendLog(L"After construction in Click: " + to_hstring(DictionaryCount()));
+            WinUI3Package::ProgressBarEx prewarmed;
+            AppendLog(L"After ProgressBarEx construction in Click: " + to_hstring(DictionaryCount()));
         }
 
-        // ItemsSource is x:Bind-connected before startup layout. Installing the
-        // row template and revealing the populated, virtualized ListView causes
-        // XAML itself to measure the list and realize the visible task rows.
-        SamplesList().ItemTemplate(SelectedTemplate());
-        SamplesList().Visibility(Visibility::Visible);
+        // The ListView and its XAML-fixed template have already completed an
+        // empty layout. Populating only the bound collection mirrors OpenNet's
+        // Loaded-time view-model activation without replacing ItemTemplate.
+        // Add a single item first, then force the visible ListView through its
+        // own measure/arrange cycle while the first ProgressBarEx is still cold.
+        m_taskItems.Append(make<TaskSampleViewModel>(L"Task 0"));
+        AppendLog(L"After first item notification, before forced layout: dictionaries = " + to_hstring(DictionaryCount()));
         SamplesList().InvalidateMeasure();
-        AppendLog(L"List revealed; XAML is measuring and realizing visible rows.");
-        AppendLog(L"Scroll to realize later rows. Only visible rows should load initially.");
+        SamplesList().UpdateLayout();
+        AppendLog(L"After first item layout: dictionaries = " + to_hstring(DictionaryCount()));
+
+        // Populate the remaining rows after the cold first-use boundary, as the
+        // task collection continues to receive items during normal operation.
+        for (int i = 1; i < 500; ++i)
+        {
+            m_taskItems.Append(make<TaskSampleViewModel>(L"Task " + to_hstring(i)));
+        }
+        SamplesList().InvalidateMeasure();
+        SamplesList().UpdateLayout();
+        AppendLog(L"After adding tasks: dictionaries = " + to_hstring(DictionaryCount()));
+        AppendLog(L"The XAML-fixed ItemTemplate is being realized by the visible ListView; scroll to realize later rows.");
     }
 
     void WETestWindow::RunColdList_Click(IInspectable const&, RoutedEventArgs const&)
@@ -161,12 +156,41 @@ namespace winrt::WinUI3cppWorkTest::implementation
         DirectHost().Content(control);
     }
 
-    void WETestWindow::SampleItem_Loaded(IInspectable const&, RoutedEventArgs const&)
+    void WETestWindow::SampleItem_Loaded(IInspectable const& sender, RoutedEventArgs const&)
     {
         ++m_loadedCount;
         if (m_loadedCount <= 3)
         {
-            AppendLog(L"Row Loaded #" + to_hstring(m_loadedCount) + L": dictionaries = " + to_hstring(DictionaryCount()));
+            auto row = sender.try_as<FrameworkElement>();
+            AppendLog(L"Row Loaded #" + to_hstring(m_loadedCount) + L": dictionaries = " + to_hstring(DictionaryCount()) + L", measured row height = " + to_hstring(row ? row.ActualHeight() : 0.0));
+        }
+    }
+
+    void WETestWindow::TaskDataRow_Loaded(IInspectable const& sender, RoutedEventArgs const&)
+    {
+        // OpenNet synchronizes DataRow cell visibility when each virtualized
+        // row is loaded, then requests a fresh measure/arrange pass.
+        if (auto row = sender.try_as<winrt::WinUI3cppWorkTest::TaskDataRow>())
+        {
+            auto const implementation = winrt::get_self<TaskDataRow>(row);
+            if (m_dataRowLoadedCount++ < 3)
+            {
+                AppendLog(L"TaskDataRow Loaded: children=" + to_hstring(row.Children().Size()) + L", MeasureOverride=" + to_hstring(implementation->MeasurePassCount()) + L", ArrangeOverride=" + to_hstring(implementation->ArrangePassCount()));
+            }
+            for (auto const& child : row.Children())
+            {
+                child.Visibility(Visibility::Visible);
+            }
+            row.InvalidateMeasure();
+            row.InvalidateArrange();
+        }
+    }
+
+    void WETestWindow::ProgressControl_Loaded(IInspectable const& sender, RoutedEventArgs const&)
+    {
+        if (auto progress = sender.try_as<WinUI3Package::ProgressBarEx>(); progress && m_progressLoadedCount++ < 4)
+        {
+            AppendLog(L"ProgressBarEx Loaded: dictionaries=" + to_hstring(DictionaryCount()) + L", size=" + to_hstring(progress.ActualWidth()) + L"x" + to_hstring(progress.ActualHeight()));
         }
     }
 }
