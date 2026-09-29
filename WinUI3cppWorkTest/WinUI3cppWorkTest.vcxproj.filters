@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
@@ -17,32 +17,14 @@
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />
-    <Midl Include="TaskDataRow.idl">
-      <Filter>Samples\WinUI Essentials</Filter>
-    </Midl>
-    <Midl Include="TaskSampleViewModel.idl">
-      <Filter>Samples\WinUI Essentials</Filter>
-    </Midl>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
     <ClCompile Include="DoubleToIntConverter.cpp" />
-    <ClCompile Include="TaskDataRow.cpp">
-      <Filter>Samples\WinUI Essentials</Filter>
-    </ClCompile>
-    <ClCompile Include="TaskSampleViewModel.cpp">
-      <Filter>Samples\WinUI Essentials</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="TaskDataRow.h">
-      <Filter>Samples\WinUI Essentials</Filter>
-    </ClInclude>
-    <ClInclude Include="TaskSampleViewModel.h">
-      <Filter>Samples\WinUI Essentials</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">

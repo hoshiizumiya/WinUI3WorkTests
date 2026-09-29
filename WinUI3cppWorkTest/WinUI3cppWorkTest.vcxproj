@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <CppWinRTOptimized>true</CppWinRTOptimized>
@@ -149,14 +149,6 @@
       <DependentUpon>TestDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
-    <ClInclude Include="TaskDataRow.h">
-      <DependentUpon>TaskDataRow.idl</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
-    <ClInclude Include="TaskSampleViewModel.h">
-      <DependentUpon>TaskSampleViewModel.idl</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
     <ClInclude Include="WETestWindow.xaml.h">
       <DependentUpon>WETestWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -219,14 +211,6 @@
       <DependentUpon>TestDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
-    <ClCompile Include="TaskDataRow.cpp">
-      <DependentUpon>TaskDataRow.idl</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="TaskSampleViewModel.cpp">
-      <DependentUpon>TaskSampleViewModel.idl</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
     <ClCompile Include="WETestWindow.xaml.cpp">
       <DependentUpon>WETestWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -259,12 +243,6 @@
     </Midl>
     <Midl Include="TestDialog.idl">
       <DependentUpon>TestDialog.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
-    <Midl Include="TaskDataRow.idl">
-      <SubType>Code</SubType>
-    </Midl>
-    <Midl Include="TaskSampleViewModel.idl">
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="WETestWindow.idl">

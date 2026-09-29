@@ -1,7 +1,5 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "App.xaml.h"
-#include "MainWindow.xaml.h"
-#include "DevWindow.xaml.h"
 #include "WETestWindow.xaml.h"
 
 using namespace winrt;
@@ -39,8 +37,6 @@ namespace winrt::WinUI3cppWorkTest::implementation
     /// <param name="e">Details about the launch request and process.</param>
     void App::OnLaunched([[maybe_unused]] LaunchActivatedEventArgs const& e)
     {
-        // Other sample windows instantiate Essential controls eagerly. Opening one
-        // here would prewarm their dictionaries and invalidate the cold test.
         auto testWindow = make<implementation::WETestWindow>();
         window = testWindow;
         testWindow.Activate();

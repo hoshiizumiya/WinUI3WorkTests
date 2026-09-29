@@ -1,32 +1,71 @@
-# WinUI Essentials: first-use resource timing
+# ProgressBarEx first-use during ListView layout
 
-Run `WinUI3cppWorkTest` in the debugger. It opens `WETestWindow` alone so that the older `MainWindow` cannot construct `SettingsCard` or `SettingsExpander` before this test. The old prototype did not compile: `ScrollView_Loaded` returned `void` but used `co_await` (which requires a coroutine return type), and `Contact::GetContactsAsync` did not exist. This sample uses an initially empty `IObservableVector<IInspectable>` and later adds 500 `TaskSampleViewModel` objects, matching the WinRT collection interface consumed by the XAML `ItemsControl`.
+This sample reduces the failure to one `ListView`, one initially empty observable vector, and one `ProgressBarEx` in the item template. Run only one case per process because `TemplateControlHelper` loads the control's resource dictionary once per process.
 
-## Run one case per process
+## Cases
 
-For each list scenario, **restart the application** and click the named button. Cold and warm list cases exercise `ProgressBarEx`; use Direct creation to test `SettingsCard`, `SettingsExpander`, and `GroupBox` individually. Those controls also derive from `TemplateControlHelper<T>` and have a `ResourceUri`. A `SettingsExpander` resource references a `SettingsCard` resource.
+| Button | Order of operations | Result |
+| --- | --- | --- |
+| Cold ProgressBarEx in ListView | Show and lay out the empty `ListView`; click; append the first item; synchronously call `UpdateLayout`; the item template constructs the first `ProgressBarEx` during measure. | Reproduces `Child collection must not be modified during measure or arrange`. |
+| Prewarm, then populate ListView | Show and lay out the empty `ListView`; click; construct a detached `ProgressBarEx`; append the first item; call `UpdateLayout`. | Does not crash. The resource dictionary is merged before ListView measures the first row. |
+| Direct construction | Show and lay out the window; click; construct a `ProgressBarEx` and assign it to a `ContentControl`. | Does not crash. Resource loading and content insertion occur outside ListView measure. |
 
-| Scenario | Button | First construction | What it isolates |
-| --- | --- | --- | --- |
-| Direct | Direct creation | Button click, before inserting into the visual tree | Loading the dictionary without ListView layout |
-| Cold list | Cold ProgressBarEx list | The already-visible ListView receives its first items; its XAML-fixed DataTemplate is unchanged | First-use dictionary insertion while XAML realizes visible task rows |
-| Warm list | Prewarm ProgressBarEx, then list | Button click before items are added to the visible ListView | XAML list layout with that dictionary already inserted |
+Restart the app before each case. After one case, the process has already loaded the ProgressBarEx resource dictionary, so a second case would no longer test first use.
 
-The ProgressBarEx `ListView` is visible from startup in an `Auto` Grid row with a finite viewport. Its XAML-fixed `ItemTemplate` is applied before layout, and the list binds to an empty observable collection; the test appends one item, forces a ListView measure/arrange pass, and then appends the remaining 499 task view models. This follows OpenNet’s ordering: the visible list and template exist before the page view model activates on `Loaded` and fills the collection. Do **not** wrap it in an outer `ScrollView`: unbounded measurement can realize every item and defeat the virtualization comparison. Scroll to realize later rows. The progress sample uses a local native `TaskDataRow` panel that measures and arranges 14 columns with OpenNet’s 16-pixel spacing and no fixed row height. It approximates OpenNet’s custom panel, but does not link OpenNet’s `DataRow`/`DataTable` project or use its `TaskViewModel`; the sample item binds task name, progress, colors, and visibility with typed `x:Bind` properties.
+`TaskItems` is created as an empty `IObservableVector<IInspectable>` before `InitializeComponent`. XAML binds the `ListView` to that same vector with `x:Bind`. The first item is appended only after the window is visible, so the initial empty-list layout has completed. The cold and prewarm paths both append the same boxed integers and call the same `UpdateLayout`; their only meaningful difference is whether a `ProgressBarEx` was constructed before the item was realized.
 
-## The earlier `ItemsSource` exception
+The template sets `Percent="50"`. `ProgressBarEx.Value` is normalized to `0.0–1.0`, while `Percent` is `0–100`; using `Value="50"` would mean 5000% before clamping and would not represent a 50% sample.
 
-The supplied debugger trace for the previous sample ended at the projected `ListView::ItemsSource(...)` call in `RunList`, with `E_INVALIDARG`; it did not show a `Measure`/`Arrange` path or a child-collection mutation. In the warm case, the selected Essential control had already been constructed before the failing `ItemsSource` assignment. That exception therefore came from the test harness's collection hookup and did not reproduce OpenNet's reported layout exception. Changing the source to `IObservableVector<IInspectable>` with boxed strings removed that failure, which the user confirmed. The exact internal validation that rejected the earlier vector is not established by that trace, so this note does not attribute it to a particular WinUI implementation detail.
+## What the first-chance stack proves
 
-OpenNet binds an observable task collection to a `ListView` whose XAML-fixed item template contains a full-row progress layer, a status/name cell, a progress cell, and 12 other detail columns. This sample uses the same two ProgressBarEx placements, the same 14 child-to-column positions, and the same DataTable spacing. The test action adds one item, explicitly invalidates and updates the visible list to force XAML through measure/arrange, then adds the remaining tasks. The local panel exercises custom `MeasureOverride` and `ArrangeOverride`, but it still does not use OpenNet’s actual DataTable-linked panel or generated task bindings.
+The failing cold run has this relevant stack, from the layout caller down to the resource append:
 
-## Interpret results
+```text
+DirectUI::ListViewBase::MeasureOverride
+  CUIElement::MeasureInternal / CUIElement::Measure
+    DirectUI::ModernCollectionBasePanel::MeasureOverride
+      DirectUI::ModernCollectionBasePanel::MeasureSpecialElements
+        GenerateContainerAtIndexImpl
+          CDataTemplate::QueryContentNoRef
+            CTemplateContent::Load
+              XamlType::CreateInstance(ProgressBarEx)
+                ProgressBarEx::ProgressBarEx
+                  TemplateControlHelper::TemplateControlHelper
+                    XamlResourceHelper::XamlResourceHelper
+                      Application.Resources.MergedDictionaries().Append
+                        CResourceDictionaryCollection::OnAddToCollection
+                          CResourceDictionary::InvalidateImplicitStyles
+                            CCoreServices::InvalidateImplicitStylesOnRoots
+                              CFrameworkElement::InvalidateImplicitStyles
+                                CFrameworkElement::OnStyleChanged
+                                  CScrollContentControl::SetValue
+                                    CContentControl::SetValue
+                                      CUIElement::RemoveChild
+                                        CCollection::FailIfLocked
+```
 
-- If direct and warm list work but cold list fails with `Child collection must not be modified during measure or arrange`, the timing of first-use dictionary insertion is implicated. This does **not** establish which WinUI element had its child collection changed: capture the first-chance native exception call stack to find that operation.
-- If direct creation also fails, inspect the control constructor and dictionary load independently of ListView virtualization.
-- If the ProgressBarEx cold-list case works, it shares the dictionary-loading mechanism but this combination of its template and layout did not reproduce the failure. A shared helper does not imply every control must throw.
-- If the dictionary count does not rise on first construction, inspect whether another control or imported dictionary already loaded its resources before the test. Resource dictionaries may themselves merge additional dictionaries, so a delta need not equal one.
+The stack therefore identifies two simultaneous operations:
 
-In Visual Studio, enable breaking on thrown C++/WinRT exceptions, then run the cold case in a fresh process. Record the *first* application and `Microsoft.UI.Xaml.dll` frames at the throw site, not just the later `UnhandledException` callback. Do not mark the exception handled: that would mask the crash rather than identify the child mutation.
+1. The `ItemsStackPanel` is measuring the ListView and creates the first item from its `DataTemplate`. This is the `MeasureOverride → MeasureSpecialElements → CDataTemplate::QueryContentNoRef` portion.
+2. During that construction, `XamlResourceHelper` appends the ProgressBarEx dictionary to application resources. The dictionary contains an implicit `Style TargetType="ProgressBarEx"`. WinUI's `CResourceDictionaryCollection::OnAddToCollection` detects that implicit style and invalidates implicit styles on existing roots. Style refresh reaches `CContentControl::SetValue`; when a control template changes, that code removes the old template child. The owning child collection is still locked by the active layout pass, so `CCollection::FailIfLocked` raises the exception.
 
-Implementation references: `SharedComponent/ProgressBarEx.h`, `SharedComponent/SettingsCard.h`, `SharedComponent/SettingsExpander.h`, `SharedComponent/GroupBox.h`, and `WinUI3Package/include/TemplateControlHelper.hpp` in [WinUIEssentials](https://github.com/HO-COOH/WinUIEssentials).
+The source paths corresponding to these frames are [`TemplateControlHelper.hpp`](https://github.com/HO-COOH/WinUIEssentials/blob/master/WinUI3Package/include/TemplateControlHelper.hpp), [`ProgressBarEx_Resource.xaml`](https://github.com/HO-COOH/WinUIEssentials/blob/master/WinUI3Package/ProgressBarEx_Resource.xaml), and WinUI's [`ResourceDictionaryCollection.cpp`](https://github.com/microsoft/microsoft-ui-xaml/blob/main/dxaml/xcp/components/Collection/ResourceDictionaryCollection.cpp), [`ContentControl.cpp`](https://github.com/microsoft/microsoft-ui-xaml/blob/main/dxaml/xcp/core/core/elements/ContentControl.cpp), and [`collect.cpp`](https://github.com/microsoft/microsoft-ui-xaml/blob/main/dxaml/xcp/components/Collection/collect.cpp).
+
+`ProgressBarEx::OnApplyTemplate` is not the child-removal site in this stack. The control constructor causes a global resource update; WinUI's implicit-style refresh then reaches a `ContentControl` and attempts to remove a template child while layout has locked the collection. The `CScrollContentControl` frame identifies the class involved, but this stack alone does not identify which particular visual-tree instance it is.
+
+## Why the two controls do not crash
+
+In the prewarm case, the same dictionary append and implicit-style invalidation run in the button handler before the first item is added. There is no ListView measure pass holding the relevant child collection at that moment. When the item template later constructs its own `ProgressBarEx`, the helper's once-only resource initialization has already completed, so it does not append the dictionary again during measure.
+
+In the direct case, the first constructor also runs in the button handler while the window is idle. Assigning the new control to `DirectHost.Content` then adds it to the visual tree outside ListView measure. The constructor does not cause a child mutation while a collection is locked.
+
+The maintainer's prepopulated-vector example is a valid non-crashing case, but it does not perform this sample's explicit transition from an already laid-out empty ListView to a newly populated ListView. It shows that a `ProgressBarEx` in an item template is not sufficient by itself to trigger the exception. The cold/prewarm comparison isolates the additional condition shown in the stack: first-time global implicit-style invalidation occurs while the ListView is synchronously realizing an item during measure.
+
+## Reproduction steps
+
+1. Start a fresh process and wait for the empty ListView to appear.
+2. Click **Cold ProgressBarEx in ListView**. The first item is appended, then `UpdateLayout` synchronously forces item realization and measure.
+3. Restart the app and click **Prewarm, then populate ListView**.
+4. Restart again and click **Direct construction**.
+
+In Visual Studio, break on the first thrown WinRT exception. The useful frames are `CCollection::FailIfLocked`, `CUIElement::RemoveChild`, `CContentControl::SetValue`, `CFrameworkElement::OnStyleChanged`, `CResourceDictionaryCollection::OnAddToCollection`, and `XamlResourceHelper::XamlResourceHelper`. The later unhandled-exception callback does not show the original cause as clearly.
